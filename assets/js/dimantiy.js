@@ -38,36 +38,30 @@
 	{
 		var index = state.Index || 0;
 		var items = state.Items || [];
-		var bound = state.Bound;
-		var value = items[index];
+		var bound = state.Bound || 0;
 		var chain = state.Chain || [];
 		
-		if (!bound) return;
-		if (!value) return;
-		if (value > bound) return;
-		if (value == bound)
+		for (var i = index; i < items.length; i++)
 		{
-			chain.push(value);
-			result.push(this._clone(chain));
-			return;
-		}
-		if (value < bound)
-		{
-			chain.push(value);
-			bound -= value;
-			for (var i = index + 1; i < items.length; i++)
+			var value = items[i];
+			if (value > bound) break;
+			if (value == bound)
 			{
-				if (items[i] > bound) break;
-				
+				chain.push(value);
+				result.push(this._clone(chain));
+				chain.pop();
+			}
+			if (value < bound)
+			{
+				chain.push(value);
 				this._findCombo({
-					Index: i,
+					Index: i + 1,
 					Items: items,
-					Bound: bound,
+					Bound: bound - value,
 					Chain: chain
 				}, result);
+				chain.pop();
 			}
-			chain.pop();
-			return;
 		}
 	};
 	
