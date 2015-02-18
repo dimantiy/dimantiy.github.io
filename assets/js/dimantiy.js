@@ -29,14 +29,46 @@
 		return a < 0;
 	};
 	
-	combinatorP._findCombo = function (sum, arr, index)
+	combinatorP._clone = function (a)
 	{
-		index = index || 0;
-		var res = null;
+		return JSON.parse(JSON.stringify(a));
+	};
+	
+	combinatorP._findCombo = function (state, result)
+	{
+		var index = state.Index || 0;
+		var items = state.Items || [];
+		var bound = state.Bound;
+		var value = items[index];
+		var chain = state.Chain || [];
 		
-		
-		
-		return res;
+		if (!bound) return;
+		if (!value) return;
+		if (value > bound) return;
+		if (value == bound)
+		{
+			chain.push(value);
+			result.push(this._clone(chain));
+			return;
+		}
+		if (value < bound)
+		{
+			chain.push(value);
+			bound -= value;
+			for (var i = index + 1; i < items.length; i++)
+			{
+				if (items[i] > bound) break;
+				
+				this._findCombo({
+					Index: i,
+					Items: items,
+					Bound: bound,
+					Chain: chain
+				}, result);
+			}
+			chain.pop();
+			return;
+		}
 	};
 	
 	combinatorP.run = function (arr)
@@ -55,9 +87,16 @@
 		negative.sort(this._sort).reverse();
 		
 		// Main loop
+		var result = [];
 		
+		this._findCombo({
+			Index: 0,
+			Items: positive,
+			Bound: this._Sum,
+			Chain: []
+		}, result);
 		
-		return [positive, negative];
+		return result;
 	};
 	
 	combinatorP = null;
