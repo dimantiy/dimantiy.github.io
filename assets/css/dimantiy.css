@@ -1,0 +1,21 @@
+
+header {
+	padding-top: 5em;
+	padding-bottom: 5em;
+	background-color: #333;
+}
+
+header h1,
+header h2
+{
+	text-align: center;
+	color: #FFF;
+}
+
+article {
+	margin-top: 2em;
+}
+
+nav {
+	margin-top: 2em;
+}
