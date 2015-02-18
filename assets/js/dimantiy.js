@@ -42,7 +42,7 @@
 	combinatorP.run = function (arr)
 	{
 		// Check arguments
-		arr = arr[];
+		arr = arr || [];
 		
 		// Splitting
 		var positive = arr.filter(this._filterPos);
