@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Board - dimantiy.github.io</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/board.css" />
+  </head>
+  <body>
+    
+
+	<div class="dp-app">
+		<div class="dp-board-container"></div>
+		<div class="dp-zoom">
+			<div class="btn-group">
+				<button class="btn btn-default" id="id-dp-zoom-in">
+					<span class="glyphicon glyphicon-zoom-in"></span>
+				</button>
+				<button class="btn btn-default" id="id-dp-zoom-out">
+					<span class="glyphicon glyphicon-zoom-out"></span>
+				</button>
+				<button class="btn btn-default" id="id-dp-minimize">
+					<span class="glyphicon glyphicon-resize-small"></span>
+				</button>
+			</div>
+		</div>
+		<div class="dp-render">
+			<div class="btn-group">
+				<button class="btn btn-default" id="id-dp-dom">DOM</button>
+				<button class="btn btn-default" id="id-dp-canvas">CANVAS</button>
+			</div>
+		</div>
+		<div class="dp-search">
+			<form class="form-inline" onsubmit="return false;" id="id-dp-search-form">
+				<div class="input-group">
+					<input id="id-dp-search-input" type="text" class="form-control" id="exampleInputAmount" placeholder="Search...">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">
+							<span class="glyphicon glyphicon-search"></span>
+						</button>
+					</span>
+				</div>
+			</form>
+		</div>
+		<div class="dp-map"></div>
+	</div>
+	
+    <script src="assets/js/vendor/jquery.js"></script>
+    <script src="assets/js/vendor/jquery.mousewheel.js"></script>
+	<script src="assets/js/core.js"></script>
+	<script src="assets/js/board.js"></script>
+	<script src="assets/js/layer.js"></script>
+	<script src="assets/js/widget.js"></script>
+	<script src="assets/js/app.js"></script>
+  </body>
+</html>

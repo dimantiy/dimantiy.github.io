@@ -1,0 +1,128 @@
+/*
+ * Styles for board
+ * 
+ * (c) Dmitriy Pankov 2015
+ */
+
+ /* Base */
+
+html,
+body
+{
+	width: 100%;
+	height: 100%;
+}
+
+/* Board */
+
+.dp-board
+{
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background-color: #FED;
+}
+
+.dp-board-layer-container
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.dp-board-event-facade
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+/* DOM Layer */
+
+.dp-dom-layer
+{
+	position: absolute;
+	overflow: visible;
+	width: 0px;
+	height: 0px;
+}
+
+.dp-dom-layer-widget
+{
+	position: absolute;
+	overflow: hidden;
+}
+
+/* Canvas Layer */
+
+.dp-canvas-layer
+{
+	position: absolute;
+	overflow: visible;
+	width: 0px;
+	height: 0px;
+}
+
+.dp-canvas-layer-canvas
+{
+	position: absolute;
+	width: 100px;
+	height: 100px;
+}
+
+/* App */
+
+.dp-app,
+.dp-board-container
+{
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.dp-zoom
+{
+	position: absolute;
+	bottom: 1.25rem;
+	left: 1.25rem;
+}
+
+.dp-search
+{
+	width: 25rem;
+	position: absolute;
+	top: 1.25rem;
+	left: 1.25rem;
+}
+
+.dp-render
+{
+	position: absolute;
+	top: 1.25rem;
+	right: 1.25rem;
+}
+
+.dp-zoom .button,
+.dp-search .button,
+.dp-search input,
+.dp-render .button
+{
+	margin-bottom: 0;
+}
+
+.dp-map
+{
+	position: absolute;
+	bottom: 1.25em;
+	right: 1.25em;
+	width: 10rem;
+	height: 7.5rem;
+	background-color: rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+}
