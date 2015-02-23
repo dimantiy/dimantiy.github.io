@@ -65,6 +65,21 @@
 		
 		updateLayerTypeButtons();
 		app.Board.minimize();
+		
+		$.ajax({
+			type: "GET",
+			url: "https://realtimeboard.com/embed/",
+			data: { id: 74254397 },
+			dataType: "json",
+			success: function (data)
+			{
+				console.log(data);
+			},
+			error: function (data)
+			{
+				console.log("Cann't connect to server");
+			}
+		});
 	});
 	
 })();

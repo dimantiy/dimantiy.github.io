@@ -14,7 +14,7 @@
 		this._Left = 0;
 		this._Scale = 1.0;
 		this._LayerType = DP.LayerType.Dom;
-		this._Widgets = [new DP.StickerWidget(), new DP.ImageWidget({Left: 180, Top: 180, Width: 20, Height: 20})];
+		this._Widgets = [];
 		this._SelectedIndex = -1;
 		DP.Board.base.constructor.apply(this, arguments);
 		this._ClassName = "dp-board";
@@ -262,6 +262,12 @@
 	{
 		
 		this.update();
+	};
+	
+	boardP.setWidgets = function (value)
+	{
+		this._Widgets = value;
+		this._fillLayers();
 	};
 	
 	boardP = null;

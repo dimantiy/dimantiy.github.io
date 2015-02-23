@@ -21,7 +21,7 @@ body
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	background-color: #FED;
+	background-color: #DEF;
 }
 
 .dp-board-layer-container
@@ -72,8 +72,6 @@ body
 .dp-canvas-layer-canvas
 {
 	position: absolute;
-	width: 100px;
-	height: 100px;
 }
 
 /* App */

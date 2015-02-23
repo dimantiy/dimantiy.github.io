@@ -119,8 +119,10 @@
 	{
 		DP.CanvasLayer.base.constructor.apply(this, arguments);
 		this._ClassName = "dp-canvas-layer";
-		this._OffsetX = 0;
-		this._OffsetY = 0;
+		this._canvasTop = 0;
+		this._canvasLeft = 0;
+		this._canvasWidth = 0;
+		this._canvasHeight = 0;
 	};
 	
 	DP.initClass(DP.CanvasLayer, DP.Layer);
@@ -132,6 +134,10 @@
 		if (!this._canvas)
 		{
 			this._canvas = DP.createElement("dp-canvas-layer-canvas", "canvas");
+			this._canvas.width = this._canvasWidth;
+			this._canvas.height = this._canvasHeight;
+			this._canvas.style.top = this._canvasTop + "px";
+			this._canvas.style.left = this._canvasLeft + "px";
 		}
 		return this._canvas;
 	};
@@ -139,7 +145,6 @@
 	canvasLayerP._render = function ()
 	{
 		this._DomNode.appendChild(this._getCanvas());
-		
 		this.update();
 	};
 	
@@ -155,6 +160,10 @@
 			container.style.transform = "scale(" + scale + ", " + scale + ")";
 			container.style.left = left + "px";
 			container.style.top = top + "px";
+			
+			var canvas = this._getCanvas();
+			canvas.style.top = this._canvasTop + "px";
+			canvas.style.left = this._canvasLeft + "px";
 		}
 	};
 	
@@ -166,14 +175,60 @@
 		}
 	};
 	
+	canvasLayerP._reDrawCanvas = function (settings)
+	{
+		var top = Math.min(this._canvasTop, settings.Top);
+		var left = Math.min(this._canvasLeft, settings.Left);
+		var right = Math.max(this._canvasLeft + this._canvasWidth, settings.Left + settings.Width);
+		var bottom = Math.max(this._canvasTop + this._canvasHeight, settings.Top + settings.Height);
+		var width = right - left;
+		var height = bottom - top;
+		
+		var dx = this._canvasLeft - left;
+		var dy = this._canvasTop - top;
+		
+		var canvas = this._getCanvas();
+		var tempCanvas = DP.createElement("dp-canvas-layer-canvas", "canvas");
+		tempCanvas.width = width;
+		tempCanvas.height = height;
+		
+		var tempContext = tempCanvas.getContext("2d");
+		tempContext.drawImage(canvas, dx, dy);
+		
+		canvas.width = width;
+		canvas.height = height;
+		
+		var context = canvas.getContext("2d");
+		context.clearRect(0, 0, width, height);
+		context.drawImage(tempCanvas, 0, 0);
+		
+		this._canvasTop = top;
+		this._canvasLeft = left;
+		this._canvasWidth = width;
+		this._canvasHeight = height;
+	};
+	
 	canvasLayerP.drawText = function (settings)
 	{
-		// Создаем всеобъемлящий канвас
+		this._reDrawCanvas(settings);
+		var canvas = this._getCanvas();
+		var context = canvas.getContext("2d");
+		context.fillStyle = "#000";
+		context.font = "14px 'Helvetica Neue', Helvetica, Arial, sans-serif";
+		//context.textBaseline = "bottom";
+		context.fillText(settings.Text, settings.Left - this._canvasLeft, settings.Top - this._canvasTop + 15, settings.Width);
+		this.update();
 	};
 	
 	canvasLayerP.drawImage = function (settings)
 	{
-		
+		this._reDrawCanvas(settings);
+		var canvas = this._getCanvas();
+		var context = canvas.getContext("2d");
+		var image = new Image();
+		image.src = settings.Url;
+		context.drawImage(image, settings.Left - this._canvasLeft, settings.Top - this._canvasTop, settings.Width, settings.Height);
+		this.update();
 	};
 	
 	canvasLayerP = null;
