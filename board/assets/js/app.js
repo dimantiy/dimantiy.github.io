@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 
  * 
  * (c) Dmitriy Pankov 2015
@@ -25,11 +25,6 @@
 		
 		$("#id-dp-minimize").click(function () {
 			app.Board.minimize();
-		});
-		
-		$("#id-dp-search-form").submit(function () {
-			var text = $("#id-dp-search-input").val();
-			app.Board.search(text);
 		});
 		
 		var btnDom = $("#id-dp-dom");
@@ -68,12 +63,50 @@
 		
 		$.ajax({
 			type: "GET",
-			url: "https://realtimeboard.com/embed/",
-			data: { id: 74254397 },
-			dataType: "json",
+			url: "http://api.realtimeboard.com/objects/74254402",
 			success: function (data)
 			{
-				console.log(data);
+				var widgets = [];
+				for (var i = 0; i < data.widgets.length; i++)
+				{
+					var w = data.widgets[i];
+					switch (w.type)
+					{
+						case 1: // Images
+							widgets.push(new DP.ImageWidget({
+								Scale: w.scale || 1,
+								Top: w.y,
+								Left: w.x,
+								Width: w.width || 100,
+								Height: w.height || 100,
+								Url: w.url
+							}));
+							break;
+						case 4: // Text
+							widgets.push(new DP.TextWidget({
+								Scale: w.scale || 1,
+								Top: w.y,
+								Left: w.x,
+								Width: w.width || 100,
+								Height: w.height || 100,
+								Text: w.text.split("<F ").join("<FONT ")
+							}));
+							break;
+						case 5: // Sticker
+							widgets.push(new DP.StickerWidget({
+								Scale: w.scale || 1,
+								Top: w.y,
+								Left: w.x,
+								Width: w.width || 200,
+								Height: w.height || 200,
+								Text: w.text,
+								Url: w.url
+							}));
+							break;
+					}
+				}
+				app.Board.setWidgets(widgets);
+				app.Board.minimize();
 			},
 			error: function (data)
 			{

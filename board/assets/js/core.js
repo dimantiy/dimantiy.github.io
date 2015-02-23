@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Core functions
  * 
  * (c) Dmitriy Pankov 2015

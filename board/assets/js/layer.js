@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 
  * 
  * (c) Dmitriy Pankov 2015
@@ -96,7 +96,8 @@
 		node.style.top = settings.Top + "px";
 		node.style.left = settings.Left + "px";
 		node.style.width = settings.Width + "px";
-		node.style.height = settings.Height + "px";
+		//node.style.height = settings.Height + "px";
+		node.style.transform = "scale(" + settings.Scale + ", " + settings.Scale + ")";
 		this._DomNode.appendChild(node);
 	};
 	
@@ -106,8 +107,9 @@
 		node.src = settings.Url;
 		node.style.top = settings.Top + "px";
 		node.style.left = settings.Left + "px";
-		node.style.width = settings.Width + "px";
-		node.style.height = settings.Height + "px";
+		//node.style.width = settings.Width + "px";
+		//node.style.height = settings.Height + "px";
+		node.style.transform = "scale(" + settings.Scale + ", " + settings.Scale + ")";
 		this._DomNode.appendChild(node);
 	};
 	

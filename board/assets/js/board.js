@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 
  * 
  * (c) Dmitriy Pankov 2015
@@ -164,7 +164,7 @@
 	
 	boardP.setScale = function (value)
 	{
-		this._Scale = Math.min(10, Math.max(0.1, value));
+		this._Scale = Math.min(100, Math.max(0.01, value));
 	};
 	
 	boardP.setLayerType = function (value)
@@ -254,12 +254,6 @@
 		this.setTop((height - dy * scale) / 2);
 		this.setLeft((width - dx * scale) / 2);
 		this.setScale(scale);
-		
-		this.update();
-	};
-	
-	boardP.search = function (text)
-	{
 		
 		this.update();
 	};
