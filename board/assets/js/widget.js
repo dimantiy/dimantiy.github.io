@@ -12,9 +12,15 @@
 	{
 		this._Top = 0;
 		this._Left = 0;
+		this._Width = 0;
+		this._Height = 0;
 		this._Scale = 1.0;
-		this._Width = 100;
-		this._Height = 100;
+		this.Loaded = new DP.Event();
+		if (settings.Loaded)
+		{
+			this.Loaded.add(settings.Loaded);
+			delete settings.Loaded;
+		}
 		DP.Widget.base.constructor.apply(this, arguments);
 	};
 	
@@ -42,7 +48,10 @@
 	DP.TextWidget = function (settings)
 	{
 		this._Text = "Widget";
+		this._FontSize = 14;
+		this._Width = 100;
 		DP.TextWidget.base.constructor.apply(this, arguments);
+		this.Loaded.fire();
 	};
 	
 	DP.initClass(DP.TextWidget, DP.Widget);
@@ -58,13 +67,23 @@
 	
 	DP.ImageWidget = function (settings)
 	{
-		this._Url = "assets/img/sticker.png";
 		DP.ImageWidget.base.constructor.apply(this, arguments);
+		var self = this;
+		var img = this._image = new Image();
+		img.onload = function ()
+		{
+			self._Width = img.width;
+			self._Height = img.height;
+			self.Loaded.fire();
+		};
+		img.src = this._Url;
 	};
 	
 	DP.initClass(DP.ImageWidget, DP.Widget);
 	
 	var imageWidgetP = DP.ImageWidget.prototype;
+		
+	imageWidgetP._Url = "";
 	
 	imageWidgetP.draw = function (layer)
 	{
@@ -78,12 +97,13 @@
 		this._Text = "Sticker";
 		this._Padding = 20;
 		DP.StickerWidget.base.constructor.apply(this, arguments);
-		this._Url = "assets/img/sticker.png";
 	};
 	
-	DP.initClass(DP.StickerWidget, DP.Widget);
+	DP.initClass(DP.StickerWidget, DP.ImageWidget);
 	
 	var stickerWidgetP = DP.StickerWidget.prototype;
+		
+	stickerWidgetP._Url = "assets/img/sticker.png";
 	
 	stickerWidgetP.draw = function (layer)
 	{

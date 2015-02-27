@@ -46,6 +46,32 @@
 		return new Error(DP.ERROR_METHOD_NOT_IMPLEMENTED.replace("{0}", "update"));
 	};
 	
+	// Event
+	
+	DP.Event = function ()
+	{
+		this._handlers = [];
+	};
+	
+	var eventP = DP.Event.prototype;
+	
+	eventP.add = function (handler)
+	{
+		this._handlers.push(handler);
+	};
+	
+	eventP.fire = function ()
+	{
+		var handlers = this._handlers;
+		for (var i = 0; i < handlers.length; i++)
+		{
+			var h = handlers[i];
+			h.apply(this, arguments);
+		}
+	};
+	
+	eventP = null;
+	
 	// Base object
 	DP.Object = function (settings)
 	{
