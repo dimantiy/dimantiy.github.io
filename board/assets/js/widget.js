@@ -15,6 +15,7 @@
 		this._Width = 0;
 		this._Height = 0;
 		this._Scale = 1.0;
+		this._Angle = 0.0;
 		this.Loaded = new DP.Event();
 		if (settings.Loaded)
 		{
@@ -44,14 +45,23 @@
 	};
 	
 	widgetP = null;
+
+})();
+
+(function ()
+{
+
+	"use strict";
 	
 	DP.TextWidget = function (settings)
 	{
 		this._Text = "Widget";
 		this._FontSize = 14;
 		this._Width = 100;
+		this._Background = "rgba(0, 0, 0, 0)";
 		DP.TextWidget.base.constructor.apply(this, arguments);
 		this.Loaded.fire();
+		this._Height = 0;
 	};
 	
 	DP.initClass(DP.TextWidget, DP.Widget);
@@ -60,10 +70,27 @@
 	
 	textWidgetP.draw = function (layer)
 	{
-		layer.drawText(this.getSettings());
+		var text = {
+			Top: this.getTop(),
+			Left: this.getLeft(),
+			Width: this.getWidth() * this.getScale(),
+			Height: this.getHeight() * this.getScale(),
+			Angle: this.getAngle(),
+			Text: this.getText(),
+			Background: this.getBackground(),
+			FontSize: this.getFontSize() * this.getScale()
+		};
+		layer.drawText(text);
 	};
 	
 	textWidgetP = null;
+
+})();
+
+(function ()
+{
+
+	"use strict";
 	
 	DP.ImageWidget = function (settings)
 	{
@@ -87,16 +114,34 @@
 	
 	imageWidgetP.draw = function (layer)
 	{
-		layer.drawImage(this.getSettings());
+		var img = {
+			Top: this.getTop(),
+			Left: this.getLeft(),
+			Width: this.getWidth() * this.getScale(),
+			Height: this.getHeight() * this.getScale(),
+			Angle: this.getAngle(),
+			Url: this.getUrl()
+		};
+		layer.drawImage(img);
 	};
 	
 	imageWidgetP = null;
+
+})();
+
+(function ()
+{
+
+	"use strict";
 	
 	DP.StickerWidget = function (settings)
 	{
 		this._Text = "Sticker";
-		this._Padding = 20;
+		this._FontSize = 30;
+		this._Padding = 15;
 		DP.StickerWidget.base.constructor.apply(this, arguments);
+		this._Width = 200;
+		this._Height = 200;
 	};
 	
 	DP.initClass(DP.StickerWidget, DP.ImageWidget);
@@ -107,16 +152,29 @@
 	
 	stickerWidgetP.draw = function (layer)
 	{
-		layer.drawImage(this.getSettings());
-		var textSettings = this.getSettings()
-		textSettings.Top += this._Padding;
-		textSettings.Left += this._Padding;
-		textSettings.Width -= this._Padding * 2;
-		textSettings.Height -= this._Padding * 2;
-		layer.drawText(textSettings);
+		var img = {
+			Top: this.getTop(),
+			Left: this.getLeft(),
+			Width: this.getWidth() * this.getScale(),
+			Height: this.getHeight() * this.getScale(),
+			Angle: this.getAngle(),
+			Url: this.getUrl()
+		};
+
+		var text = {
+			Top: this.getTop() + this.getPadding() * this.getScale(),
+			Left: this.getLeft() + this.getPadding() * this.getScale(),
+			Width: this.getWidth() * this.getScale() - 2 * this.getPadding() * this.getScale(),
+			Height: this.getHeight() * this.getScale() - 2 * this.getPadding() * this.getScale(),
+			Angle: this.getAngle(),
+			Text: this.getText(),
+			FontSize: this.getFontSize() * this.getScale()
+		};
+
+		layer.drawImage(img);
+		layer.drawText(text);
 	};
 	
 	stickerWidgetP = null;
-	
 	
 })();

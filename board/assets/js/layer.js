@@ -53,7 +53,13 @@
 	};
 	
 	layerP = null;
-	
+
+})();
+
+(function ()
+{
+	"use strict";
+
 	// DOM Layer
 	
 	DP.DomLayer = function (settings)
@@ -98,27 +104,37 @@
 	{
 		var node = DP.createElement("dp-dom-layer-widget");
 		node.innerHTML = settings.Text;
-		node.style.top = settings.Top + "px";
-		node.style.left = settings.Left + "px";
+		node.style.fontSize = settings.FontSize + "px";
 		node.style.width = settings.Width + "px";
-		//node.style.height = settings.Height + "px";
-		node.style.transform = "scale(" + settings.Scale + ", " + settings.Scale + ")";
+		node.style.left = settings.Left - settings.Width / 2 - settings.FontSize + "px";
+		node.style.background = settings.Background;
+		node.style.padding = settings.FontSize + "px";
+		if (settings.Height)
+			node.style.height = settings.Height + "px";
+		node.style.transform = "rotate(" + settings.Angle + "deg)";
 		this._DomNode.appendChild(node);
+		node.style.top = settings.Top - $(node).height() / 2 - settings.FontSize + "px";
 	};
 	
 	domLayerP.drawImage = function (settings)
 	{
 		var node = DP.createElement("dp-dom-layer-widget", "img");
 		node.src = settings.Url;
-		node.style.top = settings.Top + node.height * (settings.Scale - 1) / 2 + "px";
-		node.style.left = settings.Left + node.width * (settings.Scale - 1) / 2 + "px";
-		//node.style.width = settings.Width + "px";
-		//node.style.height = settings.Height + "px";
-		node.style.transform = "scale(" + settings.Scale + ", " + settings.Scale + ")";
+		node.style.top = settings.Top - settings.Height / 2 + "px";
+		node.style.left = settings.Left - settings.Width / 2 + "px";
+		node.style.width = settings.Width + "px";
+		node.style.height = settings.Height + "px";
+		node.style.transform = "rotate(" + settings.Angle + "deg)";
 		this._DomNode.appendChild(node);
 	};
 	
 	domLayerP = null;
+
+})();
+
+(function ()
+{
+	"use strict";
 	
 	// Canvas Layer
 	

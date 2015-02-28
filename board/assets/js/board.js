@@ -230,7 +230,7 @@
 		var width = $(this._DomNode).width();
 		var height = $(this._DomNode).height();
 		var centerX = width / 2;
-		var centerY = width / 2;
+		var centerY = height / 2;
 		
 		var top = Infinity;
 		var left = Infinity;
@@ -243,17 +243,20 @@
 			top = Math.min(top, w.getTop());
 			left = Math.min(left, w.getLeft());
 			right = Math.max(right, w.getRight());
-			bottom = Math.max(bottom, w.getBottom());
+			bottom = Math.max(bottom, w.getTop());
 		}
 		
-		var dx = right - left;
-		var dy = bottom - top;
+		var dx = right - left || width;
+		var dy = bottom - top || height;
 		
-		var scale = Math.min(width / dx, height / dy);
-		
-		this.setTop((height - dy * scale) / 2);
-		this.setLeft((width - dx * scale) / 2);
+		var scale = Math.max(width / dx, height / dy);
+
 		this.setScale(scale);
+
+		scale = this.getScale();
+
+		this.setTop(-top * scale);
+		this.setLeft(-left * scale);
 		
 		this.update();
 	};

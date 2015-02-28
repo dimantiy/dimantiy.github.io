@@ -73,6 +73,21 @@
 				app.Board.minimize();
 			}
 		};
+
+		app.toColor = function (num)
+		{
+			var color = "rgba(0, 0, 0, 0)";
+			if (num && num > 0)
+			{
+				color = num.toString(16);
+				while (color.length < 6)
+				{
+					color = "0" + color;
+				}
+				color = "#" + color;
+			}
+			return color;
+		};
 		
 		$.ajax({
 			type: "GET",
@@ -96,6 +111,7 @@
 							widgets.push(new DP.ImageWidget({
 								Loaded: app.onWidgetLoaded,
 								Scale: w.scale || 1,
+								Angle: w.angle || 0,
 								Top: w.y,
 								Left: w.x,
 								Width: w.width || 100,
@@ -111,7 +127,8 @@
 								Left: w.x,
 								Width: w.width || 100,
 								Height: w.height || 1000,
-								Text: w.text.split("<F ").join("<FONT ")
+								Background: app.toColor(w && w.style && w.style.bc),
+								Text: w.text.split("<F ").join("<FONT ").split(" C=").join(" COLOR=")
 							}));
 							break;
 						case 5: // Sticker

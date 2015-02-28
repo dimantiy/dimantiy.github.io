@@ -71,6 +71,13 @@
 	};
 	
 	eventP = null;
+
+})();
+
+(function ()
+{
+
+	"use strict";
 	
 	// Base object
 	DP.Object = function (settings)
@@ -121,7 +128,8 @@
 		{
 			if (s[0] === "_" && s[1] === s[1].toUpperCase())
 			{
-				settings[s.substr(1)] = this[s];
+				var name = s.substr(1);
+				settings[name] = this[s];
 			}
 		}
 		
@@ -140,6 +148,13 @@
 	};
 	
 	objectP = null;
+
+})();
+
+(function ()
+{
+
+	"use strict";
 	
 	// Base UI-control
 	DP.Control = function (settings)

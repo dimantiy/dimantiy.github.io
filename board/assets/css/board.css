@@ -57,7 +57,18 @@ body
 {
 	position: absolute;
 	overflow: hidden;
-	line-height: 1.15;
+	line-height: 1.0;
+	box-sizing: content-box;
+}
+
+.dp-dom-layer-widget p
+{
+	margin-bottom: 1em;
+}
+
+.dp-dom-layer-widget p:last-child
+{
+	margin-bottom: 0em;
 }
 
 /* Canvas Layer */
