@@ -254,19 +254,20 @@
 	canvasLayerP._drawText = function (canvas, settings, left, top)
 	{
 		var context = canvas.getContext("2d");
-		context.fillStyle = "#000";
-		context.font = "14px 'Helvetica Neue', Helvetica, Arial, sans-serif";
+		context.font = settings.FontSize + "px 'Helvetica Neue', Helvetica, Arial, sans-serif";
 		var maxWidth = settings.Width;
-		var rowHeight = 14;
+		var rowHeight = settings.FontSize;
 		var rowCount = 1;
 		var para = settings.Text.split("</P>");
 		
 		for (var j = 0; j < para.length; j++)
 		{
 			var p = para[j];
+			var reg = reg = /#[0-9a-f]{6}/gi;
+			var color = reg.exec(p) || ["#000000"];
 			var words = p.replace(/<[^>]*>/gi, "").split(" ");
 			var rowText = words[0];
-			
+			context.fillStyle = color[0];
 			for (var i = 1; i < words.length; i++)
 			{
 				if (context.measureText(rowText + " " + words[i]).width < maxWidth)
