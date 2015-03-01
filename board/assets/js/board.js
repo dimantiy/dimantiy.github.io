@@ -1,5 +1,5 @@
 ﻿/*
- * 
+ * Board for display widgets
  * 
  * (c) Dmitriy Pankov 2015
  */

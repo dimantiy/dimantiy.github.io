@@ -1,5 +1,5 @@
 ﻿/*
- * 
+ * Collection of widgets
  * 
  * (c) Dmitriy Pankov 2015
  */
@@ -57,11 +57,9 @@
 	{
 		this._Text = "Widget";
 		this._FontSize = 14;
-		this._Width = 100;
 		this._Background = "rgba(0, 0, 0, 0)";
 		DP.TextWidget.base.constructor.apply(this, arguments);
 		this.Loaded.fire();
-		this._Height = 0;
 	};
 	
 	DP.initClass(DP.TextWidget, DP.Widget);
@@ -152,22 +150,27 @@
 	
 	stickerWidgetP.draw = function (layer)
 	{
+		var width = this.getWidth() * this.getScale();
+		var height = this.getHeight() * this.getScale();
+		var padding = this.getPadding() * this.getScale();
+
 		var img = {
 			Top: this.getTop(),
 			Left: this.getLeft(),
-			Width: this.getWidth() * this.getScale(),
-			Height: this.getHeight() * this.getScale(),
+			Width: width,
+			Height: height,
 			Angle: this.getAngle(),
 			Url: this.getUrl()
 		};
 
 		var text = {
-			Top: this.getTop() + this.getPadding() * this.getScale(),
-			Left: this.getLeft() + this.getPadding() * this.getScale(),
-			Width: this.getWidth() * this.getScale() - 2 * this.getPadding() * this.getScale(),
-			Height: this.getHeight() * this.getScale() - 2 * this.getPadding() * this.getScale(),
+			Top: this.getTop() + padding,
+			Left: this.getLeft() + padding,
+			Width: width - 2 * padding,
+			Height: height - 2 * padding,
 			Angle: this.getAngle(),
 			Text: this.getText(),
+			Background: "rgba(0, 0, 0, 0)",
 			FontSize: this.getFontSize() * this.getScale()
 		};
 

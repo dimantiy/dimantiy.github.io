@@ -136,3 +136,23 @@ body
 	background-color: rgba(0, 0, 0, 0.1);
 	overflow: hidden;
 }
+
+.dp-mock-text-height
+{
+	visibility: hidden;
+	line-height: 1.0;
+	box-sizing: content-box;
+	position: absolute;
+	top: -10000px;
+	left: -10000px;
+}
+
+.dp-mock-text-height p
+{
+	margin-bottom: 1em;
+}
+
+.dp-mock-text-height p:last-child
+{
+	margin-bottom: 0em;
+}

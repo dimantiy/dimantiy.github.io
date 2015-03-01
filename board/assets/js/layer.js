@@ -1,23 +1,23 @@
 ﻿/*
- * 
+ * Different kinds of layers
  * 
  * (c) Dmitriy Pankov 2015
  */
- 
+
 (function ()
 {
 	"use strict";
-	
+
 	DP.LayerType = {
 		Dom: "Dom",
 		Canvas: "Canvas"
 	};
-	
+
 	DP.FigureType = {
 		Image: "Image",
 		Text: "Text"
 	};
-	
+
 	// Abstract layer
 	DP.Layer = function (settings)
 	{
@@ -27,31 +27,31 @@
 		this._ParentNode = null;
 		DP.Layer.base.constructor.apply(this, arguments);
 	};
-	
+
 	DP.initClass(DP.Layer, DP.Control);
-	
+
 	var layerP = DP.Layer.prototype;
-	
+
 	layerP.clear = function ()
 	{
 		throw DP.Error.NotImplemented("clear");
 	};
-	
+
 	layerP.update = function ()
 	{
 		throw DP.Error.NotImplemented("update");
 	};
-	
+
 	layerP.drawImage = function (url, area)
 	{
 		throw DP.Error.NotImplemented("drawImage");
 	};
-	
+
 	layerP.drawText = function (text, area)
 	{
 		throw DP.Error.NotImplemented("drawText");
 	};
-	
+
 	layerP = null;
 
 })();
@@ -61,22 +61,22 @@
 	"use strict";
 
 	// DOM Layer
-	
+
 	DP.DomLayer = function (settings)
 	{
 		DP.DomLayer.base.constructor.apply(this, arguments);
 		this._ClassName = "dp-dom-layer";
 	};
-	
+
 	DP.initClass(DP.DomLayer, DP.Layer);
-	
+
 	var domLayerP = DP.DomLayer.prototype;
-	
+
 	domLayerP._render = function ()
 	{
 		this.update();
 	};
-	
+
 	domLayerP.update = function ()
 	{
 		if (this._DomNode)
@@ -85,13 +85,13 @@
 			var scale = this.getScale();
 			var left = this.getLeft();
 			var top = this.getTop();
-			
+
 			container.style.transform = "scale(" + scale + ", " + scale + ")";
 			container.style.left = left + "px";
 			container.style.top = top + "px";
 		}
 	};
-	
+
 	domLayerP.clear = function ()
 	{
 		if (this._DomNode)
@@ -99,7 +99,7 @@
 			this._DomNode.innerHTML = "";
 		}
 	};
-	
+
 	domLayerP.drawText = function (settings)
 	{
 		var node = DP.createElement("dp-dom-layer-widget");
@@ -115,7 +115,7 @@
 		this._DomNode.appendChild(node);
 		node.style.top = settings.Top - $(node).height() / 2 - settings.FontSize + "px";
 	};
-	
+
 	domLayerP.drawImage = function (settings)
 	{
 		var node = DP.createElement("dp-dom-layer-widget", "img");
@@ -127,7 +127,7 @@
 		node.style.transform = "rotate(" + settings.Angle + "deg)";
 		this._DomNode.appendChild(node);
 	};
-	
+
 	domLayerP = null;
 
 })();
@@ -135,29 +135,29 @@
 (function ()
 {
 	"use strict";
-	
+
 	// Canvas Layer
-	
+
 	DP.CanvasLayer = function (settings)
 	{
-		this._TileWidth = 400;
-		this._TileHeight = 400;
+		this._TileWidth = 500;
+		this._TileHeight = 500;
 		DP.CanvasLayer.base.constructor.apply(this, arguments);
 		this._ClassName = "dp-canvas-layer";
 		this._tiles = {};
 		this._shapes = [];
 		this._redrawCollection = [];
 	};
-	
+
 	DP.initClass(DP.CanvasLayer, DP.Layer);
-	
+
 	var canvasLayerP = DP.CanvasLayer.prototype;
-	
+
 	canvasLayerP._render = function ()
 	{
 		this.update();
 	};
-	
+
 	canvasLayerP._getTile = function (row, col)
 	{
 		var tiles = this._tiles;
@@ -174,7 +174,7 @@
 		}
 		return this._tiles[row][col];
 	};
-	
+
 	canvasLayerP.update = function ()
 	{
 		if (this._DomNode)
@@ -183,13 +183,13 @@
 			var scale = this.getScale();
 			var left = this.getLeft();
 			var top = this.getTop();
-			
+
 			container.style.transform = "scale(" + scale + ", " + scale + ")";
 			container.style.left = left + "px";
 			container.style.top = top + "px";
 		}
 	};
-	
+
 	canvasLayerP.clear = function ()
 	{
 		if (this._DomNode)
@@ -199,12 +199,12 @@
 			this._DomNode.innerHTML = "";
 		}
 	};
-	
+
 	canvasLayerP._redrawAll = function ()
 	{
 		var shapes = this._shapes;
 		var tiles = this._tiles;
-		
+
 		for (var y in tiles)
 		{
 			var row = tiles[y];
@@ -215,16 +215,16 @@
 				context.clearRect(0, 0, this._TileWidth, this._TileHeight);
 			}
 		}
-		
+
 		for (var i = 0; i < shapes.length; i++)
 		{
 			var settings = shapes[i];
 			this._drawShape(settings);
 		}
-		
+
 		this._redrawTimeout = null;
 	};
-	
+
 	canvasLayerP._drawShape = function (settings)
 	{
 		var rowBegin = Math.floor(settings.Top / this._TileHeight);
@@ -235,88 +235,163 @@
 		{
 			for (var col = colBegin; col <= colEnd; col++)
 			{
-				var tile = this._getTile(row, col);
-				var left = settings.Left - col * this._TileWidth;
-				var top = settings.Top - row * this._TileHeight;
 				switch (settings.Type)
 				{
 					case DP.FigureType.Image:
-						this._drawImage(tile, settings, left, top);
+						this._drawImage(settings, row, col);
 						break;
 					case DP.FigureType.Text:
-						this._drawText(tile, settings, left, top);
+						this._drawText(settings, row, col);
 						break;
 				}
 			}
 		}
 	};
-	
-	canvasLayerP._drawText = function (canvas, settings, left, top)
+
+	canvasLayerP._parseColor = function (text)
 	{
+		var reg = /#[0-9a-f]{6}/gi;
+		var color = reg.exec(text) || ["#000000"];
+		return color[0];
+	};
+
+	canvasLayerP._clearText = function (text)
+	{
+		return text.replace(/<[^>]*>/gi, "");
+	};
+
+	canvasLayerP._textToParagraph = function (text)
+	{
+		var paragraphs = [];
+		var pText = text.split("</P>");
+		for (var i = 0; i < pText.length; i++)
+		{
+			var p = pText[i];
+			paragraphs.push({
+				Color: this._parseColor(p),
+				Text: this._clearText(p)
+			});
+		}
+		return paragraphs;
+	};
+
+	canvasLayerP._getRow = function (context, words, width)
+	{
+		if (words.length === 0)
+			return "";
+
+		var row = words.shift();
+
+		while (words.length)
+		{
+			var t = row + " " + words[0];
+			if (context.measureText(t).width <= width)
+			{
+				row = t;
+				words.shift();
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		return row;
+	};
+
+	canvasLayerP._splitRows = function (context, text, width)
+	{
+		var rows = [];
+		var words = text.split(" ");
+		var row = "";
+		while (row = this._getRow(context, words, width))
+		{
+			rows.push(row);
+		}
+		return rows;
+	};
+
+	canvasLayerP._drawText = function (settings, row, col)
+	{
+		var offsetX = col * this.getTileWidth();
+		var offsetY = row * this.getTileHeight();
+		var canvas = this._getTile(row, col);
 		var context = canvas.getContext("2d");
-		context.font = settings.FontSize + "px 'Helvetica Neue', Helvetica, Arial, sans-serif";
-		var maxWidth = settings.Width;
 		var rowHeight = settings.FontSize;
 		var rowCount = 1;
-		var para = settings.Text.split("</P>");
-		
-		for (var j = 0; j < para.length; j++)
+		var para = this._textToParagraph(settings.Text);
+
+		var fs = settings.FontSize;
+		var top = settings.Top - offsetY;
+		var left = settings.Left - offsetX;
+		var width = settings.Width;
+		var height = settings.Height;
+
+		context.fillStyle = settings.Background;
+		context.fillRect(left, top, width, height);
+
+
+		context.font = settings.FontSize + "px 'Helvetica Neue', Helvetica, Arial, sans-serif";
+		for (var i = 0; i < para.length; i++)
 		{
-			var p = para[j];
-			var reg = reg = /#[0-9a-f]{6}/gi;
-			var color = reg.exec(p) || ["#000000"];
-			var words = p.replace(/<[^>]*>/gi, "").split(" ");
-			var rowText = words[0];
-			context.fillStyle = color[0];
-			for (var i = 1; i < words.length; i++)
+			var p = para[i];
+			context.fillStyle = p.Color;
+			var rows = this._splitRows(context, p.Text, width - 2 * fs);
+
+			for (var j = 0; j < rows.length; j++)
 			{
-				if (context.measureText(rowText + " " + words[i]).width < maxWidth)
-				{
-					rowText += " " + words[i];
-				}
-				else
-				{
-					context.fillText(rowText, left, top + rowCount * rowHeight);
-					rowCount++;
-					rowText = words[i];
-				}
+				context.fillText(rows[j], left + fs, top + fs + rowHeight * rowCount);
+				rowCount++;
 			}
-			
-			context.fillText(rowText, left, top + rowCount * rowHeight);
-			rowCount++;
+
+			if (rows.length)
+				rowCount++;
 		}
 	};
-	
-	canvasLayerP._drawImage = function (canvas, settings, left, top)
+
+	canvasLayerP._drawImage = function (settings, row, col)
 	{
+		var offsetX = col * this.getTileWidth();
+		var offsetY = row * this.getTileHeight();
+		var canvas = this._getTile(row, col);
 		var context = canvas.getContext("2d");
 		var image = new Image();
 		image.src = settings.Url;
-		context.drawImage(image, left, top, settings.Width, settings.Height);
+		context.drawImage(
+			image,
+			settings.Left - offsetX,
+			settings.Top - offsetY,
+			settings.Width,
+			settings.Height);
 	};
-	
+
 	canvasLayerP.drawText = function (settings)
 	{
 		settings.Type = DP.FigureType.Text;
-		settings.Height = 1000;
+		settings.Height += settings.FontSize * 2;
+		settings.Width += settings.FontSize * 2;
+		settings.Left -= settings.Width / 2;
+		settings.Top -= settings.Height / 2;
 		this._shapes.push(settings);
 		if (!this._redrawTimeout)
 		{
 			this._redrawTimeout = setTimeout(this._redrawAll.bind(this), 0);
 		}
 	};
-	
+
 	canvasLayerP.drawImage = function (settings)
 	{
 		settings.Type = DP.FigureType.Image;
+		settings.Left -= settings.Width / 2;
+		settings.Top -= settings.Height / 2;
 		this._shapes.push(settings);
 		if (!this._redrawTimeout)
 		{
 			this._redrawTimeout = setTimeout(this._redrawAll.bind(this), 0);
 		}
 	};
-	
+
 	canvasLayerP = null;
-	
-	
+
+
 })();

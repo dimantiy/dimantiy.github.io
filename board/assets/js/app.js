@@ -1,5 +1,5 @@
 ﻿/*
- * 
+ * Application file
  * 
  * (c) Dmitriy Pankov 2015
  */
@@ -88,6 +88,16 @@
 			}
 			return color;
 		};
+
+
+
+		app.getTextHeight = function (text, width)
+		{
+			var node = $(".dp-mock-text-height");
+			node.width(width);
+			node.html(text);
+			return node.height();
+		};
 		
 		$.ajax({
 			type: "GET",
@@ -98,12 +108,6 @@
 				app.loadedWidgets = data.widgets.length;
 				for (var i = 0; i < data.widgets.length; i++)
 				{
-					// widgets.push(new DP.TextWidget({
-						// Text: "asdf asdf asdf asd fasd fasdf asdf asd fasd asdf\r\nasd asd fasdf asd asd fasdf asd asdf asdf asdf asd fasdf asd fasdf adsf asdf",
-						// Height: 1000,
-						// Width: 50
-					// }));
-					// break;
 					var w = data.widgets[i];
 					switch (w.type)
 					{
@@ -120,15 +124,17 @@
 							}));
 							break;
 						case 4: // Text
+							var text = w.text.split("<F ").join("<FONT ").split(" C=").join(" COLOR=");
+							var width = w.width || 100;
 							widgets.push(new DP.TextWidget({
 								Loaded: app.onWidgetLoaded,
 								Scale: w.scale || 1,
 								Top: w.y,
 								Left: w.x,
-								Width: w.width || 100,
-								Height: w.height || 1000,
+								Width: width,
+								Height: w.height || app.getTextHeight(text, width),
 								Background: app.toColor(w && w.style && w.style.bc),
-								Text: w.text.split("<F ").join("<FONT ").split(" C=").join(" COLOR=")
+								Text: text
 							}));
 							break;
 						case 5: // Sticker
