@@ -227,23 +227,43 @@
 
 	canvasLayerP._drawShape = function (settings)
 	{
-		var rowBegin = Math.floor(settings.Top / this._TileHeight);
-		var colBegin = Math.floor(settings.Left / this._TileWidth);
-		var rowEnd = Math.floor((settings.Top + settings.Height) / this._TileHeight);
-		var colEnd = Math.floor((settings.Left + settings.Width) / this._TileWidth);
+		var width = settings.Width;
+		var height = settings.Height;
+		var cx = settings.Left + width / 2;
+		var cy = settings.Top + height / 2;
+		var r = Math.sqrt(width * width + height * height) / 2;
+
+		var rowBegin = Math.floor((cy - r) / this._TileHeight);
+		var colBegin = Math.floor((cx - r) / this._TileWidth);
+		var rowEnd = Math.floor((cy + r) / this._TileHeight);
+		var colEnd = Math.floor((cx + r) / this._TileWidth);
+
 		for (var row = rowBegin; row <= rowEnd; row++)
 		{
 			for (var col = colBegin; col <= colEnd; col++)
 			{
+				var offsetX = col * this.getTileWidth();
+				var offsetY = row * this.getTileHeight();
+				var canvas = this._getTile(row, col);
+				var context = canvas.getContext("2d");
+
+				context.save();
+				context.translate(-offsetX, -offsetY);
+				context.translate(cx, cy);
+				context.rotate(settings.Angle);
+
 				switch (settings.Type)
 				{
 					case DP.FigureType.Image:
-						this._drawImage(settings, row, col);
+						this._drawImage(settings, cx, cy, context);
 						break;
 					case DP.FigureType.Text:
-						this._drawText(settings, row, col);
+						this._drawText(settings, cx, cy, context);
 						break;
 				}
+
+				context.restore();
+
 			}
 		}
 	};
@@ -311,12 +331,8 @@
 		return rows;
 	};
 
-	canvasLayerP._drawText = function (settings, row, col)
+	canvasLayerP._drawText = function (settings, offsetX, offsetY, context)
 	{
-		var offsetX = col * this.getTileWidth();
-		var offsetY = row * this.getTileHeight();
-		var canvas = this._getTile(row, col);
-		var context = canvas.getContext("2d");
 		var rowHeight = settings.FontSize;
 		var rowCount = 1;
 		var para = this._textToParagraph(settings.Text);
@@ -349,12 +365,8 @@
 		}
 	};
 
-	canvasLayerP._drawImage = function (settings, row, col)
+	canvasLayerP._drawImage = function (settings, offsetX, offsetY, context)
 	{
-		var offsetX = col * this.getTileWidth();
-		var offsetY = row * this.getTileHeight();
-		var canvas = this._getTile(row, col);
-		var context = canvas.getContext("2d");
 		var image = new Image();
 		image.src = settings.Url;
 		context.drawImage(
@@ -372,6 +384,7 @@
 		settings.Width += settings.FontSize * 2;
 		settings.Left -= settings.Width / 2;
 		settings.Top -= settings.Height / 2;
+		settings.Angle *= Math.PI / 180;
 		this._shapes.push(settings);
 		if (!this._redrawTimeout)
 		{
@@ -384,6 +397,7 @@
 		settings.Type = DP.FigureType.Image;
 		settings.Left -= settings.Width / 2;
 		settings.Top -= settings.Height / 2;
+		settings.Angle *= Math.PI / 180;
 		this._shapes.push(settings);
 		if (!this._redrawTimeout)
 		{
