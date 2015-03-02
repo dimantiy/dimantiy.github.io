@@ -3,16 +3,16 @@
  * 
  * (c) Dmitriy Pankov 2015
  */
- 
+
 (function ()
 {
 	"use strict";
-	
+
 	// Main namespace
 	var DP = window.DP = {};
-	
+
 	DP.ERROR_METHOD_NOT_IMPLEMENTED = "Method \"{0}\" not implemented";
-	
+
 	// Inherience function
 	DP.initClass = function (child, parent)
 	{
@@ -22,7 +22,7 @@
 		child.prototype.constructor = child;
 		child.base = parent.prototype;
 	};
-	
+
 	DP.createElement = function (className, elementName)
 	{
 		elementName = elementName || "div";
@@ -33,33 +33,33 @@
 		}
 		return element;
 	};
-	
+
 	DP.clone = function (obj)
 	{
 		return JSON.parse(JSON.stringify(obj));
 	};
-	
+
 	DP.Error = {};
-	
+
 	DP.Error.NotImplemented = function (method)
 	{
 		return new Error(DP.ERROR_METHOD_NOT_IMPLEMENTED.replace("{0}", "update"));
 	};
-	
+
 	// Event
-	
+
 	DP.Event = function ()
 	{
 		this._handlers = [];
 	};
-	
+
 	var eventP = DP.Event.prototype;
-	
+
 	eventP.add = function (handler)
 	{
 		this._handlers.push(handler);
 	};
-	
+
 	eventP.fire = function ()
 	{
 		var handlers = this._handlers;
@@ -69,7 +69,7 @@
 			h.apply(this, arguments);
 		}
 	};
-	
+
 	eventP = null;
 
 })();
@@ -78,7 +78,7 @@
 {
 
 	"use strict";
-	
+
 	// Base object
 	DP.Object = function (settings)
 	{
@@ -101,9 +101,9 @@
 		}
 		this.setSettings(settings);
 	};
-	
+
 	var objectP = DP.Object.prototype;
-	
+
 	objectP._createGetter = function (name)
 	{
 		return function ()
@@ -111,7 +111,7 @@
 			return this[name];
 		};
 	};
-	
+
 	objectP._createSetter = function (name)
 	{
 		return function (value)
@@ -119,11 +119,11 @@
 			this[name] = value;
 		};
 	};
-	
+
 	objectP.getSettings = function ()
 	{
 		var settings = {};
-		
+
 		for (var s in this)
 		{
 			if (s[0] === "_" && s[1] === s[1].toUpperCase())
@@ -132,10 +132,10 @@
 				settings[name] = this[s];
 			}
 		}
-		
+
 		return settings;
 	};
-	
+
 	objectP.setSettings = function (settings)
 	{
 		if (settings)
@@ -146,7 +146,7 @@
 			}
 		}
 	};
-	
+
 	objectP = null;
 
 })();
@@ -155,23 +155,23 @@
 {
 
 	"use strict";
-	
+
 	// Base UI-control
 	DP.Control = function (settings)
 	{
 		this._ClassName = "dp-control";
 		DP.Control.base.constructor.apply(this, arguments);
 	};
-	
+
 	DP.initClass(DP.Control, DP.Object);
-	
+
 	var controlP = DP.Control.prototype;
-	
+
 	controlP._render = function ()
 	{
 		throw DP.Error.NotImplemented("_render");
 	};
-	
+
 	controlP.render = function (parentNode)
 	{
 		if (this._DomNode && this._DomNode.parentNode)
@@ -183,7 +183,7 @@
 			parentNode.appendChild(this.getDomNode());
 		}
 	};
-	
+
 	controlP.getDomNode = function ()
 	{
 		if (!this._DomNode)
@@ -193,7 +193,7 @@
 		}
 		return this._DomNode;
 	};
-	
+
 	controlP = null;
-	
+
 })();

@@ -3,11 +3,11 @@
  * 
  * (c) Dmitriy Pankov 2015
  */
- 
+
 (function ()
 {
 	"use strict";
-	
+
 	DP.Widget = function (settings)
 	{
 		this._Top = 0;
@@ -24,26 +24,43 @@
 		}
 		DP.Widget.base.constructor.apply(this, arguments);
 	};
-	
+
 	DP.initClass(DP.Widget, DP.Object);
-	
+
 	var widgetP = DP.Widget.prototype;
-	
+
 	widgetP.draw = function (layer)
 	{
 		throw DP.Error.NotImplemented("draw");
 	};
-	
+
 	widgetP.getRight = function ()
 	{
 		return this.getLeft() + this.getWidth();
 	};
-	
+
 	widgetP.getBottom = function ()
 	{
 		return this.getTop() + this.getHeight();
 	};
-	
+
+	widgetP._getRadius = function ()
+	{
+		var width = this.getWidth() * this.getScale();
+		var height = this.getHeight() * this.getScale();
+		var r = Math.sqrt(width * width + height * height) / 2;
+		return r;
+	};
+
+	widgetP.checkOver = function (x, y)
+	{
+		var dx = Math.abs(this.getLeft() - x);
+		var dy = Math.abs(this.getTop() - y);
+		var d = Math.max(dx, dy);
+		var r = this._getRadius();
+		return d <= r;
+	};
+
 	widgetP = null;
 
 })();
@@ -52,7 +69,7 @@
 {
 
 	"use strict";
-	
+
 	DP.TextWidget = function (settings)
 	{
 		this._Text = "Widget";
@@ -61,11 +78,11 @@
 		DP.TextWidget.base.constructor.apply(this, arguments);
 		this.Loaded.fire();
 	};
-	
+
 	DP.initClass(DP.TextWidget, DP.Widget);
-	
+
 	var textWidgetP = DP.TextWidget.prototype;
-	
+
 	textWidgetP.draw = function (layer)
 	{
 		var text = {
@@ -80,7 +97,7 @@
 		};
 		layer.drawText(text);
 	};
-	
+
 	textWidgetP = null;
 
 })();
@@ -89,7 +106,7 @@
 {
 
 	"use strict";
-	
+
 	DP.ImageWidget = function (settings)
 	{
 		DP.ImageWidget.base.constructor.apply(this, arguments);
@@ -103,13 +120,13 @@
 		};
 		img.src = this._Url;
 	};
-	
+
 	DP.initClass(DP.ImageWidget, DP.Widget);
-	
+
 	var imageWidgetP = DP.ImageWidget.prototype;
-		
+
 	imageWidgetP._Url = "";
-	
+
 	imageWidgetP.draw = function (layer)
 	{
 		var img = {
@@ -122,7 +139,7 @@
 		};
 		layer.drawImage(img);
 	};
-	
+
 	imageWidgetP = null;
 
 })();
@@ -131,7 +148,7 @@
 {
 
 	"use strict";
-	
+
 	DP.StickerWidget = function (settings)
 	{
 		this._Text = "Sticker";
@@ -141,13 +158,13 @@
 		this._Width = 200;
 		this._Height = 200;
 	};
-	
+
 	DP.initClass(DP.StickerWidget, DP.ImageWidget);
-	
+
 	var stickerWidgetP = DP.StickerWidget.prototype;
-		
+
 	stickerWidgetP._Url = "assets/img/sticker.png";
-	
+
 	stickerWidgetP.draw = function (layer)
 	{
 		var width = this.getWidth() * this.getScale();
@@ -177,7 +194,7 @@
 		layer.drawImage(img);
 		layer.drawText(text);
 	};
-	
+
 	stickerWidgetP = null;
-	
+
 })();

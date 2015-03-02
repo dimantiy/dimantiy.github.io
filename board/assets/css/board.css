@@ -4,19 +4,17 @@
  * (c) Dmitriy Pankov 2015
  */
 
- /* Base */
+/* Base */
 
 html,
-body
-{
+body {
 	width: 100%;
 	height: 100%;
 }
 
 /* Board */
 
-.dp-board
-{
+.dp-board {
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -24,8 +22,7 @@ body
 	background-color: #EEE;
 }
 
-.dp-board-layer-container
-{
+.dp-board-layer-container {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -33,8 +30,7 @@ body
 	height: 100%;
 }
 
-.dp-board-event-facade
-{
+.dp-board-event-facade {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -45,100 +41,69 @@ body
 
 /* DOM Layer */
 
-.dp-dom-layer
-{
+.dp-dom-layer {
 	position: absolute;
 	overflow: visible;
 	width: 0px;
 	height: 0px;
 }
 
-.dp-dom-layer-widget
-{
+.dp-dom-layer-widget {
 	position: absolute;
 	overflow: hidden;
 	line-height: 1.0;
 	box-sizing: content-box;
 }
 
-.dp-dom-layer-widget p
-{
-	margin-bottom: 1em;
-}
+	.dp-dom-layer-widget p {
+		margin-bottom: 1em;
+	}
 
-.dp-dom-layer-widget p:last-child
-{
-	margin-bottom: 0em;
-}
+		.dp-dom-layer-widget p:last-child {
+			margin-bottom: 0em;
+		}
 
 /* Canvas Layer */
 
-.dp-canvas-layer
-{
+.dp-canvas-layer {
 	position: absolute;
 	overflow: visible;
 	width: 0px;
 	height: 0px;
 }
 
-.dp-canvas-layer-tile
-{
+.dp-canvas-layer-tile {
 	position: absolute;
+	/*background-color: #CCC;*/
 }
 
 /* App */
 
 .dp-app,
-.dp-board-container
-{
+.dp-board-container {
 	position: relative;
 	width: 100%;
 	height: 100%;
 }
 
-.dp-zoom
-{
+.dp-zoom {
 	position: absolute;
 	bottom: 1.25rem;
 	left: 1.25rem;
 }
 
-.dp-search
-{
-	width: 25rem;
-	position: absolute;
-	top: 1.25rem;
-	left: 1.25rem;
-}
-
-.dp-render
-{
+.dp-render {
 	position: absolute;
 	top: 1.25rem;
 	right: 1.25rem;
 }
 
-.dp-zoom .button,
-.dp-search .button,
-.dp-search input,
-.dp-render .button
-{
-	margin-bottom: 0;
-}
+	.dp-zoom .button,
+	.dp-render .button {
+		margin-bottom: 0;
+	}
 
-.dp-map
-{
-	position: absolute;
-	bottom: 1.25em;
-	right: 1.25em;
-	width: 10rem;
-	height: 7.5rem;
-	background-color: rgba(0, 0, 0, 0.1);
-	overflow: hidden;
-}
-
-.dp-mock-text-height
-{
+.dp-mock-text-height {
 	visibility: hidden;
 	line-height: 1.0;
 	box-sizing: content-box;
@@ -147,12 +112,10 @@ body
 	left: -10000px;
 }
 
-.dp-mock-text-height p
-{
-	margin-bottom: 1em;
-}
+	.dp-mock-text-height p {
+		margin-bottom: 1em;
+	}
 
-.dp-mock-text-height p:last-child
-{
-	margin-bottom: 0em;
-}
+		.dp-mock-text-height p:last-child {
+			margin-bottom: 0em;
+		}

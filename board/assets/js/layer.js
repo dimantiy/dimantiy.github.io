@@ -142,11 +142,13 @@
 	{
 		this._TileWidth = 500;
 		this._TileHeight = 500;
+		this._DrawTimeout = 100;
 		DP.CanvasLayer.base.constructor.apply(this, arguments);
 		this._ClassName = "dp-canvas-layer";
 		this._tiles = {};
 		this._shapes = [];
 		this._redrawCollection = [];
+		this._lastIndex = 0;
 	};
 
 	DP.initClass(DP.CanvasLayer, DP.Layer);
@@ -203,25 +205,19 @@
 	canvasLayerP._redrawAll = function ()
 	{
 		var shapes = this._shapes;
-		var tiles = this._tiles;
-
-		for (var y in tiles)
-		{
-			var row = tiles[y];
-			for (var x in row)
-			{
-				var tile = row[x];
-				var context = tile.getContext('2d');
-				context.clearRect(0, 0, this._TileWidth, this._TileHeight);
-			}
-		}
-
-		for (var i = 0; i < shapes.length; i++)
+		var beginTime = new Date();
+		for (var i = this._lastIndex; i < shapes.length; i++)
 		{
 			var settings = shapes[i];
 			this._drawShape(settings);
+			if (new Date() - beginTime > this._DrawTimeout)
+			{
+				this._lastIndex = i + 1;
+				this._redrawTimeout = setTimeout(this._redrawAll.bind(this), 0);
+				return;
+			}
 		}
-
+		this._lastIndex = 0;
 		this._redrawTimeout = null;
 	};
 

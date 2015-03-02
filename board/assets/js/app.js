@@ -3,40 +3,44 @@
  * 
  * (c) Dmitriy Pankov 2015
  */
- 
+
 (function ()
 {
 	"use strict";
-	
+
 	var app = window.app = {};
-	
+
 	app.Board = new DP.Board();
-	
-	$(function () {
+
+	$(function ()
+	{
 		app.Board.render($(".dp-board-container")[0]);
-		
-		$("#id-dp-zoom-in").click(function () {
+
+		$("#id-dp-zoom-in").click(function ()
+		{
 			app.Board.zoomIn();
 		});
-		
-		$("#id-dp-zoom-out").click(function () {
+
+		$("#id-dp-zoom-out").click(function ()
+		{
 			app.Board.zoomOut();
 		});
-		
-		$("#id-dp-minimize").click(function () {
+
+		$("#id-dp-minimize").click(function ()
+		{
 			app.Board.minimize();
 		});
-		
+
 		var btnDom = $("#id-dp-dom");
 		var btnCanvas = $("#id-dp-canvas");
-		
+
 		var updateLayerTypeButtons = function ()
 		{
 			var layerType = app.Board.getLayerType();
-			
+
 			btnDom.removeClass("active");
 			btnCanvas.removeClass("active");
-			
+
 			switch (layerType)
 			{
 				case DP.LayerType.Dom:
@@ -47,20 +51,22 @@
 					break;
 			}
 		};
-		
-		btnDom.click(function () {
+
+		btnDom.click(function ()
+		{
 			app.Board.setLayerType(DP.LayerType.Dom);
 			updateLayerTypeButtons();
 		});
-		
-		btnCanvas.click(function () {
+
+		btnCanvas.click(function ()
+		{
 			app.Board.setLayerType(DP.LayerType.Canvas);
 			updateLayerTypeButtons();
 		});
-		
+
 		updateLayerTypeButtons();
 		app.Board.minimize();
-		
+
 		app.loadedWidgets = 0;
 		app.widgets = [];
 		app.onWidgetLoaded = function ()
@@ -98,7 +104,7 @@
 			node.html(text);
 			return node.height();
 		};
-		
+
 		$.ajax({
 			type: "GET",
 			url: "http://api.realtimeboard.com/objects/74254402",
@@ -157,5 +163,5 @@
 			}
 		});
 	});
-	
+
 })();
