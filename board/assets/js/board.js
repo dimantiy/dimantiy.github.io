@@ -32,6 +32,16 @@
 
 	var boardP = DP.Board.prototype;
 
+	boardP.getWidth = function ()
+	{
+		return $(this._DomNode).width();
+	};
+
+	boardP.getHeight = function ()
+	{
+		return $(this._DomNode).height();
+	};
+
 	boardP._getLayerContainer = function ()
 	{
 		if (!this._layerContainer)
@@ -41,15 +51,25 @@
 		return this._layerContainer;
 	};
 
+	boardP._getMapContainer = function ()
+	{
+		if (!this._mapContainer)
+		{
+			this._mapContainer = DP.createElement("dp-board-layer-map");
+		}
+		return this._mapContainer;
+	};
+
 	boardP._getEventFacade = function ()
 	{
 		if (!this._eventFacade)
 		{
 			this._eventFacade = DP.createElement("dp-board-event-facade");
-			$(this._eventFacade).mousewheel(this._onMouseWheel.bind(this));
-			$(this._eventFacade).mousedown(this._onMouseDown.bind(this));
-			$(this._eventFacade).mousemove(this._onMouseMove.bind(this));
-			$(this._eventFacade).mouseup(this._onMouseUp.bind(this));
+			$(this._eventFacade)
+				.mousewheel(this._onMouseWheel.bind(this))
+				.mousedown(this._onMouseDown.bind(this))
+				.mousemove(this._onMouseMove.bind(this))
+				.mouseup(this._onMouseUp.bind(this));
 		}
 		return this._eventFacade;
 	};
@@ -183,6 +203,7 @@
 	{
 		this._DomNode.appendChild(this._getLayerContainer());
 		this._DomNode.appendChild(this._getEventFacade());
+		this._DomNode.appendChild(this._getMapContainer());
 
 		this._renderLayers();
 	};
@@ -190,6 +211,7 @@
 	boardP._renderLayers = function ()
 	{
 		var layerContainer = this._getLayerContainer();
+		var mapContainer = this._getMapContainer();
 
 		for (var i = 0; i < this._Layers.length; i++)
 		{
@@ -204,6 +226,10 @@
 		this._selectLayer = this._createLayer();
 		this._selectLayer.render(layerContainer);
 		this._Layers.push(this._selectLayer);
+
+		this._mapLayer = new DP.MapLayer({ Board: this });
+		this._mapLayer.render(mapContainer);
+		this._Layers.push(this._mapLayer);
 
 		this._fillLayers();
 		this._updateLayers();
@@ -240,6 +266,7 @@
 				widgets[i].draw(this._selectLayer);
 			}
 			widgets[i].draw(this._mainLayer);
+			widgets[i].draw(this._mapLayer);
 		}
 	};
 

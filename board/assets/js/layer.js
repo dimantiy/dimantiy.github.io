@@ -398,5 +398,107 @@
 
 	canvasLayerP = null;
 
+})();
+
+(function ()
+{
+	"use strict";
+
+	DP.LayerType = {
+		Dom: "Dom",
+		Canvas: "Canvas"
+	};
+
+	DP.FigureType = {
+		Image: "Image",
+		Text: "Text"
+	};
+
+	// Abstract layer
+	DP.MapLayer = function (settings)
+	{
+		this._Padding = 10;
+		this._Radius = 5;
+		this._Board = null;
+		DP.MapLayer.base.constructor.apply(this, arguments);
+		this._shapes = [];
+	};
+
+	DP.initClass(DP.MapLayer, DP.CanvasLayer);
+
+	var mapLayerP = DP.MapLayer.prototype;
+
+	mapLayerP._redrawAll = function ()
+	{
+		this._clear();
+		var shapes = this._shapes;
+		var canvas = this._getCanvas();
+		var context = canvas.getContext("2d");
+
+		var top = 0;
+		var left = 0;
+		var right = 0;
+		var bottom = 0;
+
+		for (var i = 0; i < shapes.length; i++)
+		{
+			var settings = shapes[i];
+			top = Math.min(top, settings.Top);
+			left = Math.min(left, settings.Left);
+			right = Math.max(right, settings.Left);
+			bottom = Math.max(bottom, settings.Top);
+		}
+
+		var p = this._Padding;
+		var r = this._Radius;
+		var width = canvas.width - 2 * p;
+		var height = canvas.height - 2 * p;
+		var dx = right - left || 1;
+		var dy = bottom - top || 1;
+
+		for (var i = 0; i < shapes.length; i++)
+		{
+			var settings = shapes[i];
+			var x = (settings.Left - left) / dx * width + p;
+			var y = (settings.Top - top) / dy * height + p;
+			var rx = settings.Width / dx * width;
+			var ry = settings.Height / dy * height;
+
+			context.fillStyle = "#FFFF00";
+
+			switch (settings.Type)
+			{
+				case DP.FigureType.Image:
+					context.fillStyle = "#FF8800";
+					break;
+				case DP.FigureType.Text:
+					context.fillStyle = "rgba(0, 0, 0, 0.2)";
+					break;
+			}
+
+			context.fillRect(x - rx, y - ry, 2 * rx, 2 * ry);
+		}
+
+		var board = this._Board;
+		if (board)
+		{
+			var bs = board.getScale();
+			var bx = (-board.getLeft() / bs - left) / dx * width + p;
+			var by = (-board.getTop() / bs - top) / dy * height + p;
+			var bw = (board.getWidth() / bs) / dx * width;
+			var bh = (board.getHeight() / bs) / dy * height;
+
+			context.fillStyle = "rgba(0, 255, 0, 0.8)";
+			context.strokeRect(bx, by, bw, bh);
+
+			context.fillStyle = "rgba(0, 255, 0, 0.2)";
+			context.fillRect(bx, by, bw, bh);
+
+		}
+
+		this._redrawTimeout = null;
+	};
+
+	mapLayerP = null;
 
 })();

@@ -30,6 +30,16 @@ body {
 	height: 100%;
 }
 
+.dp-board-layer-map {
+	position: absolute;
+	right: 20px;
+	bottom: 20px;
+	width: 200px;
+	height: 160px;
+	background: rgba(255,255,255,0.8);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
 .dp-board-event-facade {
 	position: absolute;
 	top: 0;
