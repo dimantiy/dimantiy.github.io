@@ -10,6 +10,7 @@
 
 	DP.Widget = function (settings)
 	{
+		this._Id = "Widget_" + (++DP.Widget._lastIndex);
 		this._Top = 0;
 		this._Left = 0;
 		this._Width = 0;
@@ -26,6 +27,8 @@
 	};
 
 	DP.initClass(DP.Widget, DP.Object);
+
+	DP.Widget._lastIndex = 0;
 
 	var widgetP = DP.Widget.prototype;
 
@@ -85,16 +88,7 @@
 
 	textWidgetP.draw = function (layer)
 	{
-		var text = {
-			Top: this.getTop(),
-			Left: this.getLeft(),
-			Width: this.getWidth() * this.getScale(),
-			Height: this.getHeight() * this.getScale(),
-			Angle: this.getAngle(),
-			Text: this.getText(),
-			Background: this.getBackground(),
-			FontSize: this.getFontSize() * this.getScale()
-		};
+		var text = this.getSettings();
 		layer.drawText(text);
 	};
 
@@ -129,14 +123,7 @@
 
 	imageWidgetP.draw = function (layer)
 	{
-		var img = {
-			Top: this.getTop(),
-			Left: this.getLeft(),
-			Width: this.getWidth() * this.getScale(),
-			Height: this.getHeight() * this.getScale(),
-			Angle: this.getAngle(),
-			Url: this.getUrl()
-		};
+		var img = this.getSettings();
 		layer.drawImage(img);
 	};
 
@@ -152,8 +139,8 @@
 	DP.StickerWidget = function (settings)
 	{
 		this._Text = "Sticker";
-		this._FontSize = 30;
-		this._Padding = 15;
+		this._FontSize = 25;
+		this._Padding = 25;
 		DP.StickerWidget.base.constructor.apply(this, arguments);
 		this._Width = 200;
 		this._Height = 200;
@@ -167,29 +154,13 @@
 
 	stickerWidgetP.draw = function (layer)
 	{
-		var width = this.getWidth() * this.getScale();
-		var height = this.getHeight() * this.getScale();
-		var padding = this.getPadding() * this.getScale();
+		var padding = this.getPadding();
+		var fontSize = this.getFontSize();
+		var img = this.getSettings();
+		var text = this.getSettings();
 
-		var img = {
-			Top: this.getTop(),
-			Left: this.getLeft(),
-			Width: width,
-			Height: height,
-			Angle: this.getAngle(),
-			Url: this.getUrl()
-		};
-
-		var text = {
-			Top: this.getTop() + padding,
-			Left: this.getLeft() + padding,
-			Width: width - 2 * padding,
-			Height: height - 2 * padding,
-			Angle: this.getAngle(),
-			Text: this.getText(),
-			Background: "rgba(0, 0, 0, 0)",
-			FontSize: this.getFontSize() * this.getScale()
-		};
+		text.Width -= 2 * padding;
+		text.Height -= 2 * padding;
 
 		layer.drawImage(img);
 		layer.drawText(text);

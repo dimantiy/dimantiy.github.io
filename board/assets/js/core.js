@@ -181,6 +181,7 @@
 		if (parentNode)
 		{
 			parentNode.appendChild(this.getDomNode());
+			this._render();
 		}
 	};
 
@@ -189,7 +190,6 @@
 		if (!this._DomNode)
 		{
 			this._DomNode = DP.createElement(this._ClassName);
-			this._render();
 		}
 		return this._DomNode;
 	};

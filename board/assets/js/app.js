@@ -102,7 +102,9 @@
 			var node = $(".dp-mock-text-height");
 			node.width(width);
 			node.html(text);
-			return node.height();
+			var h = node.height();
+			node.html("");
+			return h;
 		};
 
 		$.ajax({

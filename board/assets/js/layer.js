@@ -24,7 +24,6 @@
 		this._Top = 0;
 		this._Left = 0;
 		this._Scale = 1.0;
-		this._ParentNode = null;
 		DP.Layer.base.constructor.apply(this, arguments);
 	};
 
@@ -42,12 +41,17 @@
 		throw DP.Error.NotImplemented("update");
 	};
 
-	layerP.drawImage = function (url, area)
+	layerP.drawImage = function (settings)
 	{
 		throw DP.Error.NotImplemented("drawImage");
 	};
 
-	layerP.drawText = function (text, area)
+	layerP.drawText = function (settings)
+	{
+		throw DP.Error.NotImplemented("drawText");
+	};
+
+	layerP.removeShape = function (id)
 	{
 		throw DP.Error.NotImplemented("drawText");
 	};
@@ -86,9 +90,7 @@
 			var left = this.getLeft();
 			var top = this.getTop();
 
-			container.style.transform = "scale(" + scale + ", " + scale + ")";
-			container.style.left = left + "px";
-			container.style.top = top + "px";
+			container.style.transform = "translate(" + left + "px, " + top + "px) scale(" + scale + ", " + scale + ")";
 		}
 	};
 
@@ -100,32 +102,56 @@
 		}
 	};
 
+	domLayerP._createNode = function (content, settings)
+	{
+		$("<div />")
+			.addClass("dp-dom-layer-shape")
+			.addClass(settings.Id)
+			.css(
+				"transform",
+				"translate(" + settings.Left + "px, " + settings.Top + "px) " +
+				"scale(" + settings.Scale + ", " + settings.Scale + ") " +
+				"rotate(" + settings.Angle + "deg) "
+			)
+			.append(content)
+			.appendTo(this._DomNode);
+	};
+
 	domLayerP.drawText = function (settings)
 	{
-		var node = DP.createElement("dp-dom-layer-widget");
-		node.innerHTML = settings.Text;
-		node.style.fontSize = settings.FontSize + "px";
-		node.style.width = settings.Width + "px";
-		node.style.left = settings.Left - settings.Width / 2 - settings.FontSize + "px";
-		node.style.background = settings.Background;
-		node.style.padding = settings.FontSize + "px";
-		if (settings.Height)
-			node.style.height = settings.Height + "px";
-		node.style.transform = "rotate(" + settings.Angle + "deg)";
-		this._DomNode.appendChild(node);
-		node.style.top = settings.Top - $(node).height() / 2 - settings.FontSize + "px";
+		this._createNode(
+			$("<div />")
+				.addClass("dp-dom-layer-widget")
+				.html(settings.Text)
+				.width(settings.Width)
+				.height(settings.Height)
+				.css("font-size", settings.FontSize)
+				.css("margin-left", -settings.Width / 2 - settings.FontSize + "px")
+				.css("margin-top", -settings.Height / 2 - settings.FontSize + "px")
+				.css("padding", settings.FontSize)
+				.css("background", settings.Background),
+			settings
+		);
 	};
 
 	domLayerP.drawImage = function (settings)
 	{
-		var node = DP.createElement("dp-dom-layer-widget", "img");
-		node.src = settings.Url;
-		node.style.top = settings.Top - settings.Height / 2 + "px";
-		node.style.left = settings.Left - settings.Width / 2 + "px";
-		node.style.width = settings.Width + "px";
-		node.style.height = settings.Height + "px";
-		node.style.transform = "rotate(" + settings.Angle + "deg)";
-		this._DomNode.appendChild(node);
+		this._createNode(
+			$("<img />")
+				.attr("src", settings.Url)
+				.addClass("dp-dom-layer-widget")
+				.width(settings.Width)
+				.height(settings.Height)
+				.css("margin-left", -settings.Width / 2 + "px")
+				.css("margin-top", -settings.Height / 2 + "px")
+				.css("background", settings.Background),
+			settings
+		);
+	};
+
+	domLayerP.removeShape = function (id)
+	{
+		$(this.getDomNode()).remove("." + id);
 	};
 
 	domLayerP = null;
@@ -140,15 +166,10 @@
 
 	DP.CanvasLayer = function (settings)
 	{
-		this._TileWidth = 500;
-		this._TileHeight = 500;
-		this._DrawTimeout = 100;
 		DP.CanvasLayer.base.constructor.apply(this, arguments);
 		this._ClassName = "dp-canvas-layer";
-		this._tiles = {};
 		this._shapes = [];
-		this._redrawCollection = [];
-		this._lastIndex = 0;
+		this._redrawDelegate = this._redrawAll.bind(this);
 	};
 
 	DP.initClass(DP.CanvasLayer, DP.Layer);
@@ -160,35 +181,26 @@
 		this.update();
 	};
 
-	canvasLayerP._getTile = function (row, col)
+	canvasLayerP._getCanvas = function ()
 	{
-		var tiles = this._tiles;
-		this._tiles[row] = this._tiles[row] || {};
-		if (!this._tiles[row][col])
+		if (!this._canvas)
 		{
-			var tile = DP.createElement("dp-canvas-layer-tile", "canvas");
-			tile.width = this._TileWidth;
-			tile.height = this._TileHeight;
-			tile.style.top = row * this._TileHeight + "px";
-			tile.style.left = col * this._TileWidth + "px";
-			this._DomNode.appendChild(tile);
-			this._tiles[row][col] = tile;
+			var canvas = DP.createElement("dp-canvas-layer-canvas", "canvas");
+			canvas.width = $(this._DomNode).width();
+			canvas.height = $(this._DomNode).height();
+			console.log($(this._DomNode).width());
+			this._canvas = canvas;
+			this._DomNode.appendChild(canvas);
 		}
-		return this._tiles[row][col];
+		return this._canvas;
 	};
 
 	canvasLayerP.update = function ()
 	{
 		if (this._DomNode)
 		{
-			var container = this.getDomNode();
-			var scale = this.getScale();
-			var left = this.getLeft();
-			var top = this.getTop();
-
-			container.style.transform = "scale(" + scale + ", " + scale + ")";
-			container.style.left = left + "px";
-			container.style.top = top + "px";
+			this._clear();
+			this._redrawAll();
 		}
 	};
 
@@ -196,72 +208,59 @@
 	{
 		if (this._DomNode)
 		{
-			this._shapes = [];
-			this._tiles = {};
 			this._DomNode.innerHTML = "";
+			this._canvas = null;
+		}
+	};
+
+	canvasLayerP._clear = function ()
+	{
+		if (this._DomNode)
+		{
+			var canvas = this._getCanvas();
+			var context = canvas.getContext("2d");
+			context.clearRect(0, 0, canvas.width, canvas.height);
 		}
 	};
 
 	canvasLayerP._redrawAll = function ()
 	{
 		var shapes = this._shapes;
-		var beginTime = new Date();
+		var canvas = this._getCanvas();
+		var context = canvas.getContext("2d");
+		context.save();
+		context.translate(this._Left, this._Top);
+		context.scale(this._Scale, this._Scale);
+		this._lastIndex = this._lastIndex || 0;
 		for (var i = this._lastIndex; i < shapes.length; i++)
 		{
 			var settings = shapes[i];
-			this._drawShape(settings);
-			if (new Date() - beginTime > this._DrawTimeout)
-			{
-				this._lastIndex = i + 1;
-				this._redrawTimeout = setTimeout(this._redrawAll.bind(this), 0);
-				return;
-			}
+			this._drawShape(settings, context);
 		}
+		context.restore();
 		this._lastIndex = 0;
 		this._redrawTimeout = null;
 	};
 
-	canvasLayerP._drawShape = function (settings)
+	canvasLayerP._drawShape = function (settings, context)
 	{
-		var width = settings.Width;
-		var height = settings.Height;
-		var cx = settings.Left + width / 2;
-		var cy = settings.Top + height / 2;
-		var r = Math.sqrt(width * width + height * height) / 2;
+		context.save();
 
-		var rowBegin = Math.floor((cy - r) / this._TileHeight);
-		var colBegin = Math.floor((cx - r) / this._TileWidth);
-		var rowEnd = Math.floor((cy + r) / this._TileHeight);
-		var colEnd = Math.floor((cx + r) / this._TileWidth);
+		context.translate(settings.Left, settings.Top);
+		context.scale(settings.Scale, settings.Scale);
+		context.rotate(settings.Angle);
 
-		for (var row = rowBegin; row <= rowEnd; row++)
+		switch (settings.Type)
 		{
-			for (var col = colBegin; col <= colEnd; col++)
-			{
-				var offsetX = col * this.getTileWidth();
-				var offsetY = row * this.getTileHeight();
-				var canvas = this._getTile(row, col);
-				var context = canvas.getContext("2d");
-
-				context.save();
-				context.translate(-offsetX, -offsetY);
-				context.translate(cx, cy);
-				context.rotate(settings.Angle);
-
-				switch (settings.Type)
-				{
-					case DP.FigureType.Image:
-						this._drawImage(settings, cx, cy, context);
-						break;
-					case DP.FigureType.Text:
-						this._drawText(settings, cx, cy, context);
-						break;
-				}
-
-				context.restore();
-
-			}
+			case DP.FigureType.Image:
+				this._drawImage(settings, context);
+				break;
+			case DP.FigureType.Text:
+				this._drawText(settings, context);
+				break;
 		}
+
+		context.restore();
 	};
 
 	canvasLayerP._parseColor = function (text)
@@ -327,19 +326,19 @@
 		return rows;
 	};
 
-	canvasLayerP._drawText = function (settings, offsetX, offsetY, context)
+	canvasLayerP._drawText = function (settings, context)
 	{
 		var rowHeight = settings.FontSize;
 		var rowCount = 1;
 		var para = this._textToParagraph(settings.Text);
 
 		var fs = settings.FontSize;
-		var top = settings.Top - offsetY;
-		var left = settings.Left - offsetX;
+		var top = -settings.Height / 2;
+		var left = -settings.Width / 2;
 		var width = settings.Width;
 		var height = settings.Height;
 
-		context.fillStyle = settings.Background;
+		context.fillStyle = settings.Background || "rgba(0,0,0,0)";
 		context.fillRect(left, top, width, height);
 
 
@@ -352,7 +351,7 @@
 
 			for (var j = 0; j < rows.length; j++)
 			{
-				context.fillText(rows[j], left + fs, top + fs + rowHeight * rowCount);
+				context.fillText(rows[j], left + fs, top + fs * 0.85 + rowHeight * rowCount);
 				rowCount++;
 			}
 
@@ -361,14 +360,14 @@
 		}
 	};
 
-	canvasLayerP._drawImage = function (settings, offsetX, offsetY, context)
+	canvasLayerP._drawImage = function (settings, context)
 	{
 		var image = new Image();
 		image.src = settings.Url;
 		context.drawImage(
 			image,
-			settings.Left - offsetX,
-			settings.Top - offsetY,
+			-settings.Width / 2,
+			-settings.Height / 2,
 			settings.Width,
 			settings.Height);
 	};
@@ -378,26 +377,22 @@
 		settings.Type = DP.FigureType.Text;
 		settings.Height += settings.FontSize * 2;
 		settings.Width += settings.FontSize * 2;
-		settings.Left -= settings.Width / 2;
-		settings.Top -= settings.Height / 2;
 		settings.Angle *= Math.PI / 180;
 		this._shapes.push(settings);
 		if (!this._redrawTimeout)
 		{
-			this._redrawTimeout = setTimeout(this._redrawAll.bind(this), 0);
+			this._redrawTimeout = setTimeout(this._redrawDelegate, 0);
 		}
 	};
 
 	canvasLayerP.drawImage = function (settings)
 	{
 		settings.Type = DP.FigureType.Image;
-		settings.Left -= settings.Width / 2;
-		settings.Top -= settings.Height / 2;
 		settings.Angle *= Math.PI / 180;
 		this._shapes.push(settings);
 		if (!this._redrawTimeout)
 		{
-			this._redrawTimeout = setTimeout(this._redrawAll.bind(this), 0);
+			this._redrawTimeout = setTimeout(this._redrawDelegate, 0);
 		}
 	};
 

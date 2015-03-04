@@ -48,8 +48,14 @@ body {
 	height: 0px;
 }
 
-.dp-dom-layer-widget {
+.dp-dom-layer-shape {
 	position: absolute;
+	overflow: visible;
+	width: 0;
+	height: 0;
+}
+
+.dp-dom-layer-widget {
 	overflow: hidden;
 	line-height: 1.0;
 	box-sizing: content-box;
@@ -68,13 +74,8 @@ body {
 .dp-canvas-layer {
 	position: absolute;
 	overflow: visible;
-	width: 0px;
-	height: 0px;
-}
-
-.dp-canvas-layer-tile {
-	position: absolute;
-	/*background-color: #CCC;*/
+	width: 100%;
+	height: 100%;
 }
 
 /* App */
