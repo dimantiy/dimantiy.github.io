@@ -1,0 +1,103 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Combinator - dimantiy.github.io</title>
+    <link rel="stylesheet" href="../assets/css/foundation.css" />
+    <link rel="stylesheet" href="../assets/css/dimantiy.css" />
+    <script src="../assets/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    
+	<header>
+		<div class="row">
+			<div class="large-12 columns">
+				<h1>dimantiy.github.io</h1>
+			</div>
+		</div>
+    </header>
+	
+	<article>
+		<div class="row">
+			<div class="large-12 columns">
+				<h1>Поиск комбинаций в массиве</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">
+				<div class="row">
+					<div class="large-6 columns">
+						<label>
+							Массив чисел
+							<textarea id="input" placeholder="Массив чисел" rows="10">1 2 3 10 5 5 7 8 100</textarea>
+						</label>
+					</div>
+					<div class="large-6 columns">
+						<label>
+							Найденные комбинации
+							<textarea id="output" placeholder="Не найдено ни одной комбинации" rows="10"></textarea>
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-12 columns">
+						<button onclick="run()" class="button">Найти комбинации чисел</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</article>
+	
+	<footer>
+		<div class="row">
+			<div class="large-12 columns">
+				<p>
+					&copy; Паньков Дмитрий Игоревич
+				</p>
+			</div>
+		</div>
+	</footer>
+	
+	
+    <script src="../assets/js/vendor/jquery.js"></script>
+    <script src="../assets/js/foundation.min.js"></script>
+	<script src="../assets/js/dimantiy.js"></script>
+	<script src="combinator.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+	<script>
+		var combinator = new DP.Combinator({ Sum: 10 });
+		
+		function parse(str)
+		{
+			var arr = str.split(" ");
+			return arr.map(function (n) { return n * 1 || 0; });
+		};
+		
+		function reduceSum(p, n)
+		{
+			return p + n;
+		};
+		
+		function print(arr)
+		{
+			var res = arr.map(function (a) {
+				var sum = a.length ? a.reduce(reduceSum) : 0;
+				return a.join(" + ") + " = " + sum;
+			});
+			return JSON.stringify(res, null, "\t");
+		};
+		
+		function run()
+		{
+			var input = document.getElementById("input");
+			var output = document.getElementById("output");
+			var arr = parse(input.value);
+			var result = combinator.run(arr);
+			output.value = print(result);
+		};
+	</script>
+  </body>
+</html>

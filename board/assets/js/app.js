@@ -109,7 +109,7 @@
 
 		$.ajax({
 			type: "GET",
-			url: "http://api.realtimeboard.com/objects/74254402",
+			url: "server/objects/74254402.json", // http://api.realtimeboard.com/objects/74254402
 			success: function (data)
 			{
 				var widgets = app.widgets;

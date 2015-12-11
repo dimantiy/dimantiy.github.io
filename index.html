@@ -21,32 +21,46 @@
 	<article>
 		<div class="row">
 			<div class="large-12 columns">
-				<h1>Поиск комбинаций в массиве</h1>
+				<h1>Пробы пера</h1>
 			</div>
 		</div>
-		<div class="row">
+		<section class="row">
 			<div class="large-12 columns">
-				<div class="row">
-					<div class="large-6 columns">
-						<label>
-							Массив чисел
-							<textarea id="input" placeholder="Массив чисел" rows="10">1 2 3 10 5 5 7 8 100</textarea>
-						</label>
-					</div>
-					<div class="large-6 columns">
-						<label>
-							Найденные комбинации
-							<textarea id="output" placeholder="Не найдено ни одной комбинации" rows="10"></textarea>
-						</label>
-					</div>
-				</div>
-				<div class="row">
-					<div class="large-12 columns">
-						<button onclick="run()" class="button">Найти комбинации чисел</button>
-					</div>
-				</div>
+				<h2><a href="combinator/index.html" title="Комбинатор">Комбинатор</a></h2>
+				<p>
+					Небольшая программа для поиска всех возможных комбинаций чисел, сумма которых равна заранее заданному числу (по умолчанию 10).
+					Остановился на решении только для положительных чисел и соответсвенно положительной суммы.
+				</p>
 			</div>
-		</div>
+		</section>
+		<section class="row">
+			<div class="large-12 columns">
+				<h2><a href="board/index.html" title="Маркерная доска">Маркерная доска</a></h2>
+				<p>
+					Эксперимент с canvas. Приложение реализовано на подобии электронных аналогов маркерных досок, на которых могут размещаться различные элементы: стикеры, текстовые блоки, изображения.
+					Из функциональных возможностей есть загрузка информации о доске с сервера, zoom & map, перемещение элементов по доске.
+					Помимо этого в ней реализовано два механизма рендеринга (Canvas и DOM) с возможностью динамического переключения между ними.
+				</p>
+			</div>
+		</section>
+		<section class="row">
+			<div class="large-12 columns">
+				<h2><a href="string/index.html" title="Струна">Струна</a></h2>
+				<p>
+					Реализация механизма воспроизведения звука колеблющейся струны.
+					Движение струны расчитывается на основе численного решения уравнения колебания математической струны (конечно-разностная схема).
+					Считывание звукового сингнала со струны осуществляется с помощью Быстрого Преобразования Фурье.
+				</p>
+			</div>
+		</section>
+		<section class="row">
+			<div class="large-12 columns">
+				<h2><a href="cows/index.html" title="Быки и коровы">Быки и коровы</a></h2>
+				<p>
+					Реализаци небезызвестной игры "Быки и коровы", которая включает в себя как сторону, загадывающую число, так и отгадывающую.
+				</p>
+			</div>
+		</section>
 	</article>
 	
 	<footer>
@@ -66,37 +80,5 @@
     <script>
       $(document).foundation();
     </script>
-	<script>
-		var combinator = new DP.Combinator({ Sum: 10 });
-		
-		function parse(str)
-		{
-			var arr = str.split(" ");
-			return arr.map(function (n) { return n * 1 || 0; });
-		};
-		
-		function reduceSum(p, n)
-		{
-			return p + n;
-		};
-		
-		function print(arr)
-		{
-			var res = arr.map(function (a) {
-				var sum = a.length ? a.reduce(reduceSum) : 0;
-				return a.join(" + ") + " = " + sum;
-			});
-			return JSON.stringify(res, null, "\t");
-		};
-		
-		function run()
-		{
-			var input = document.getElementById("input");
-			var output = document.getElementById("output");
-			var arr = parse(input.value);
-			var result = combinator.run(arr);
-			output.value = print(result);
-		};
-	</script>
   </body>
 </html>

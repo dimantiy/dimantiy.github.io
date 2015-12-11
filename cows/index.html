@@ -21,9 +21,19 @@
 	<article class="container">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1>Bulls and cows</h1>
+				<h1>Быки и коровы</h1>
+				<div id="cows_output"></div>
 			</div>
 		</div>
 	</article>
+	
+	<script src="cows.js"></script>
+	<script>
+		var outNode = document.getElementById("cows_output");
+		function print(obj) {
+			outNode.innerHTML += "<p>" + JSON.stringify(obj) + "<\p>";
+		};
+		game();
+	</script>
 </body>
 </html>
