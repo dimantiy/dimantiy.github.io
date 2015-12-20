@@ -1,160 +1,203 @@
-// # Game functions
-
-function game() {
-	// Generate number
-	var prp = new Proposer();
-	print({ "Input": prp.getNumber() });
-	var slv = new Solver();
-	var steps = 0;
-	// Game cycle
-	while (!slv.isEnd()) {
-		var hyp = slv.tryNext(prp);
-		hyp.Step = ++steps;
-		print(hyp);
-	}
-	// Game over
-	print({ "Output": slv.getResult(), "Steps": steps });
-};
-
-
-
-function Proposer() {
-	this.init();
-};
-
-Proposer.prototype.init = function () {
-	this._number = this._getRandom();
-};
-
-Proposer.prototype.getNumber = function () {
-	return this._number;
-};
-
-Proposer.prototype.check = function (num) {
-	return {
-		Number: num,
-		Bulls: getBulls(this._number, num),
-		Cows: getCows(this._number, num)
+(function ()
+{
+	"use strict";
+	
+	///
+	/// Инициализация пространства имен
+	///
+	var DP = window.DP = window.DP || {};
+	
+	///
+	/// Класс для хранения состояния игры
+	///
+	DP.Game = function (settings)
+	{
+		settings = settings || {};
+		
+		this._Symbols = settings.Symbols || this._Symbols;
+		this._Length = settings.Length || this._Length;
+		
+		accept(typeof this._Symbols === "string", "Символы должны быть представлены строкой");
+		accept(this._validateUnique(this._Symbols), "Символы должны быть уникальны");
+		accept(typeof this._Length === "number", "Длина должна быть числом");
+		accept(this._Length <= this._Symbols.length, "Длина должна быть не более количества символов");
+		accept(this._Length > 0, "Длина должна быть положительным числом");
+		
+		// Инициализация приватных переменных
+		this._symbols = {};
+		var symbols = this._Symbols.split('');
+		var i = symbols.length;
+		while (i--)
+		{
+			var s = symbols[i];
+			this._symbols[s] = s;
+		}
 	};
-};
-
-Proposer.prototype._getRandom = function () { 
-	var arr = [];
-	for (var i = 1; i <= 9; i++) {
-		arr.push({
-			Number: i,
-			Weight: Math.random()
-		});
-	}
-	arr.sort(sortWeight);
-	var num = arr[0].Number * 1000 + arr[1].Number * 100 + arr[2].Number * 10 + arr[3].Number;
-	return num;
-};
-
-function Solver() {
-	this.init();
-};
-
-Solver.prototype.init = function () {
-	this._all = this._getAll();
-	this._result = 0;
-	this._hypo = [];
-};
-
-Solver.prototype._getAll = function () {
-	var all = [];
-	for (var a = 1; a <= 9; a++) {
-		for (var b = 1; b <= 9; b++) {
-			if (a === b) continue;
-			for (var c = 1; c <= 9; c++) {
-				if (a === c || b === c) continue;
-				for (var d = 1; d <= 9; d++) {
-					if (a === d || b === d || c === d) continue;
-					all.push({
-						Number: a * 1000 + b * 100 + c * 10 + d,
-						Weight: Math.random()
-					});
+	
+	var gameP = DP.Game.prototype;
+	
+	gameP._Symbols = '123456789';
+	gameP._Length = 4;
+	
+	gameP.validate = function (number)
+	{
+		var result = true;
+		result = result
+			&& accept(typeof number === "string", "Число не определено")
+			&& accept(number.length >= this._Length, "Длина числа меньше необходимой")
+			&& accept(number.length <= this._Length, "Длина числа больше необходимой")
+			&& accept(this._validateSymbols(number), "Число содержит недопустимые символы")
+			&& accept(this._validateUnique(number), "Число содержит повторяющиеся символы");
+		
+		return result;
+	};
+	
+	gameP._validateUnique = function (number)
+	{
+		var symbols = number.split('');
+		var hash = {};
+		for (var i = 0; i < symbols.length; i++)
+		{
+			var s = symbols[i];
+			if (hash[s])
+			{
+				return false;
+			}
+			else 
+			{
+				hash[s] = s;
+			}
+		}
+		return true;
+	};
+	
+	gameP._validateSymbols = function (number)
+	{
+		var symbols = number.split('');
+		for (var i = 0; i < symbols.length; i++)
+		{
+			var s = symbols[i];
+			if (!this._symbols[s])
+			{
+				return false;
+			}
+		}
+		return true;
+	};
+	
+	gameP.getBulls = function (original, number)
+	{
+		var bulls = 0;
+		if (this.validate(original) && this.validate(number))
+		{
+			var os = original.split('');
+			var ns = number.split('');
+			for (var i = 0; i < os.length; i++)
+			{
+				if (os[i] === ns[i])
+				{
+					bulls++;
 				}
 			}
 		}
-	}
-	all.sort(sortWeight);
-	return all;
-};
-
-Solver.prototype.isEnd = function () {
-	return this._all.length === 0 || this._result !== 0;
-};
-
-Solver.prototype.tryNext = function (prp) {
-	var hyp = null;
+		return bulls;
+	};
 	
-	while (this._all.length) {
-		var num = this._all.pop().Number;
-		if (this._hypo.length === 0) {
-			hyp = prp.check(num);
-		} else {
-			for (var i = 0; i < this._hypo.length; i++) {
-				var h = this._hypo[i];
-				if (getBulls(num, h.Number) !== h.Bulls) break;
-				if (getCows(num, h.Number) !== h.Cows) break;
-				if (i === this._hypo.length - 1) {
-					hyp = prp.check(num);
+	gameP.getCows = function (original, number)
+	{
+		var cows = 0;
+		if (this.validate(original) && this.validate(number))
+		{
+			var os = original.split('');
+			for (var i = 0; i < os.length; i++)
+			{
+				var j = number.indexOf(os[i]);
+				if (j >= 0 && j !== i)
+				{
+					cows++;
 				}
 			}
 		}
-		if (hyp) break;
-	}
+		return cows;
+	};
 	
-	if (hyp) {
-		this._hypo.push(hyp);
-		if (hyp.Bulls === 4) {
-			this._result = hyp.Number;
+	gameP.getSymbols = function ()
+	{
+		return this._Symbols;
+	};
+	
+	gameP.getLength = function ()
+	{
+		return this._Length;
+	};
+	
+	///
+	/// Загадыватель числа
+	///
+	DP.Proposer = function (settings)
+	{
+		settings = settings || {};
+		
+		this._Game = settings.Game || new DP.Game();
+		this._Number = settings.Number || this._generateNumber();
+		
+		accept(this._Game.validate(this._Number), "Загаданное число должно быть валидным");
+	};
+	
+	var proposerP = DP.Proposer.prototype;
+	
+	proposerP._generateNumber = function ()
+	{
+		var symbols = this._Game.getSymbols();
+		var arr = symbols.split('');
+		var sortArr = [];
+		for (var i = 0; i < arr.length; i++)
+		{
+			sortArr.push({
+				"Char": arr[i],
+				"Weight": Math.random(),
+				"toString": function () { return this.Char; }
+			});
 		}
-	}
-	return hyp;
-};
-
-Solver.prototype.getResult = function () {
-	return this._result;
-};
-
-// # Helper functions
-
-function getBulls(a, b) {
-	a = a.toString();
-	b = b.toString();
-	var bulls = 0;
-	for (var i = 0; i < a.length; i++) {
-		if (b.indexOf(a[i]) === i) {
-			bulls++;
+		sortArr.sort(this._sort);
+		sortArr.length = this._Game.getLength();
+		return sortArr.join('');
+	};
+	
+	proposerP._sort = function (a, b)
+	{
+		return a.Weight - b.Weight;
+	};
+	
+	proposerP.check = function (number)
+	{
+		if (!this._Game.validate(number)) return null;
+		return {
+			"Number": number,
+			"Bulls": this._Game.getBulls(this._Number, number),
+			"Cows": this._Game.getCows(this._Number, number)
+		};
+	};
+	
+	///
+	/// Отгадыватель числа
+	///
+	DP.Solver = function ()
+	{
+		
+	};
+	
+	///
+	/// Вспомогательная функция проверки условия
+	///
+	function accept(condition, message)
+	{
+		if (!condition)
+		{
+			console.log(message);
+			throw new Error(message);
 		}
-	}
-	return bulls;
-};
-
-function getCows(a, b) {
-	a = a.toString();
-	b = b.toString();
-	var cows = 0;
-	for (var i = 0; i < a.length; i++) {
-		var ind = b.indexOf(a[i]);
-		if (ind >= 0 && ind !== i) {
-			cows++;
-		}
-	}
-	return cows;
-};
-
-function sortWeight(a, b) {
-	return a.Weight - b.Weight;
-};
-
-function print(obj) {
-	console.log(JSON.stringify(obj));
-};
-
-
-// # Main code
-
-//game();
+		return condition;
+	};
+	
+})();

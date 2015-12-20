@@ -1,0 +1,39 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Bulls and cows - dimantiy.github.io</title>
+	<link rel="stylesheet" href="../string/assets/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../string/assets/css/string.css" />
+</head>
+<body>
+	
+	<header>
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>dimantiy.github.io</h1>
+			</div>
+		</div>
+	</header>
+	
+	<article class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>Быки и коровы</h1>
+				<div id="cows_output"></div>
+			</div>
+		</div>
+	</article>
+	
+	<script src="cows.js"></script>
+	<script>
+		var outNode = document.getElementById("cows_output");
+		function print(obj) {
+			outNode.innerHTML += "<p>" + JSON.stringify(obj) + "<\p>";
+		};
+		game();
+	</script>
+</body>
+</html>

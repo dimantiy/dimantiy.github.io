@@ -1,39 +1,134 @@
-﻿<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Bulls and cows - dimantiy.github.io</title>
-	<link rel="stylesheet" href="../string/assets/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="../string/assets/css/string.css" />
-</head>
-<body>
-	
+<!doctype html>
+<html class="no-js" lang="en" ng-app="CowsApp">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bulls and Cows - dimantiy.github.io</title>
+    <link rel="stylesheet" href="../assets/css/foundation.css" />
+    <link rel="stylesheet" href="../assets/css/dimantiy.css" />
+    <script src="../assets/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    
 	<header>
 		<div class="row">
-			<div class="col-lg-12">
+			<div class="large-12 columns">
 				<h1>dimantiy.github.io</h1>
 			</div>
 		</div>
-	</header>
+    </header>
 	
-	<article class="container">
+	<article>
 		<div class="row">
-			<div class="col-lg-12">
+			<div class="large-12 columns">
 				<h1>Быки и коровы</h1>
-				<div id="cows_output"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-6 columns" ng-controller="SolverCtrl as ctrl">
+				<h3>Компьютер</h3>
+			</div>
+			<div class="large-6 columns" ng-controller="ProposerCtrl as ctrl">
+				<h3>Игрок</h3>
+				<table>
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Число</th>
+							<th>Быки</th>
+							<th>Коровы</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr ng-hide="ctrl.IsComplete">
+							<td></td>
+							<td>
+								<form ng-submit="ctrl.addStep(ctrl.Number)">
+									<input type="text" ng-model="ctrl.Number" autocomplete="off" style="margin: 0;" />
+								</form>
+							</td>
+							<td colspan="2">
+								<button class="button tiny" style="margin: 0;" ng-click="ctrl.addStep(ctrl.Number)">Сделать ход</button>
+							</td>
+						</tr>
+						<tr ng-show="ctrl.IsComplete">
+							<td></td>
+							<td>
+								<button class="button tiny" style="margin: 0;" ng-click="ctrl.start()">Сыграть еще</button>
+							</td>
+							<td colspan="2"></td>
+						</tr>
+					</tfoot>
+					<tbody>
+						<tr ng-repeat="step in ctrl.Steps">
+							<td>{{$index + 1}}</td>
+							<td>{{step.Number}}</td>
+							<td>{{step.Bulls}}</td>
+							<td>{{step.Cows}}</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</article>
 	
+	<footer>
+		<div class="row">
+			<div class="large-12 columns">
+				<p>
+					&copy; Паньков Дмитрий Игоревич
+				</p>
+			</div>
+		</div>
+	</footer>
+	
+	
+    <script src="../assets/js/vendor/jquery.js"></script>
+    <script src="../assets/js/foundation.min.js"></script>
+	<script src="../assets/js/dimantiy.js"></script>
 	<script src="cows.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 	<script>
-		var outNode = document.getElementById("cows_output");
-		function print(obj) {
-			outNode.innerHTML += "<p>" + JSON.stringify(obj) + "<\p>";
-		};
-		game();
+		angular.module("CowsApp", [])
+			.controller("ProposerCtrl", function ()
+			{
+				var self = this;
+				
+				self.start = function ()
+				{
+					self.Proposer = new DP.Proposer();
+					self.Steps = [];
+					self.IsComplete = false;
+					self.Number = "";
+				};
+				
+				self.addStep = function (number)
+				{
+					try
+					{
+						var step = self.Proposer.check(number);
+						this.Steps.push(step);
+						if (number.length === step.Bulls) {
+							self.IsComplete = true;
+						}
+						self.Number = "";
+					}
+					catch (e)
+					{
+						alert(e);
+					}
+				}
+				
+				self.start();
+			})
+			.controller("SolverCtrl", function ()
+			{
+				var self = this;
+				self.Solver = new DP.Solver();
+			});
 	</script>
-</body>
+  </body>
 </html>
