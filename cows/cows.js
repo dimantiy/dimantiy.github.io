@@ -182,9 +182,124 @@
 	///
 	/// Отгадыватель числа
 	///
-	DP.Solver = function ()
+	DP.Solver = function (settings)
 	{
+		settings = settings || {};
 		
+		this._Game = settings.Game || new DP.Game();
+		
+		this._init();	
+	};
+	
+	var solverP = DP.Solver.prototype;
+	
+	solverP._init = function ()
+	{
+		this._steps = [];
+		this._numbers = [];
+		this._index = 0;
+		
+		var symbols = this._Game.getSymbols().split('');
+		var all = this._getAll(symbols, this._Game.getLength());
+		for (var i = 0; i < all.length; i++)
+		{
+			all[i] = {
+				Number: all[i],
+				Weight: Math.random()
+			};
+		}
+		all.sort(sortWeight);
+		for (var i = 0; i < all.length; i++)
+		{
+			this._numbers.push(all[i].Number);
+		}
+	};
+	
+	solverP._getAll = function (symbols, length)
+	{
+		var all = [];
+		if (length)
+		{
+			for (var i = 0; i < symbols.length; i++)
+			{
+				var s = symbols[i];
+				var subset = symbols.join('').replace(s, '').split('');
+				var arr = this._getAll(subset, length - 1);
+				for (var j = 0; j < arr.length; j++)
+				{
+					all.push(s + arr[j]);
+				}
+			} 
+		}
+		else
+		{
+			all.push('');
+		}
+		return all;
+	};
+	
+	solverP.addStep = function (number, bulls, cows)
+	{
+		if (!this._Game.validate(number)) return null;
+		accept(bulls >= 0, "Количество быков должно быть неотрицательным числом");
+		accept(bulls <= this._Game.getLength(), "Количество быков не может быть больше, чем длина числа");
+		accept(cows >= 0, "Количество коров должно быть неотрицательным числом");
+		accept(cows <= this._Game.getLength(), "Количество коров не может быть больше, чем длина числа");
+		accept(bulls + cows <= this._Game.getLength(), "Суммарное количество быков и коров не может быть больше, чем длина числа");
+		
+		var step = {
+			"Number": number,
+			"Bulls": bulls,
+			"Cows": cows,
+			"Index": this._index
+		};
+		this._steps.push(step);
+		return step;
+	};
+	
+	solverP.rollback = function ()
+	{
+		if (this._steps.length)
+		{
+			var s = this._steps.pop();
+			this._index = s.Index;
+		}
+	};
+	
+	solverP.getNumber = function ()
+	{
+		while (this._index < this._numbers.length && !this._check(this._numbers[this._index]))
+		{
+			this._index++;
+		}
+		accept(this._index < this._numbers.length, "Невозможно определить число");
+		return this._numbers[this._index++];
+	};
+	
+	
+	solverP._check = function (number)
+	{
+		var valid = true;
+		for (var i = 0; i < this._steps.length; i++)
+		{
+			var s = this._steps[i];
+			try
+			{
+				var b = this._Game.getBulls(number, s.Number);
+				var c = this._Game.getCows(number, s.Number);
+				if (b !== s.Bulls || c !== s.Cows)
+				{
+					valid = false;
+					break;
+				}
+			}
+			catch (e)
+			{
+				valid = false;
+				break;
+			}
+		};
+		return valid;
 	};
 	
 	///
@@ -198,6 +313,11 @@
 			throw new Error(message);
 		}
 		return condition;
+	};
+	
+	function sortWeight(a, b)
+	{
+		return a.Weight - b.Weight;
 	};
 	
 })();

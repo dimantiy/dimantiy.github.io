@@ -27,6 +27,57 @@
 		<div class="row">
 			<div class="large-6 columns" ng-controller="SolverCtrl as ctrl">
 				<h3>Компьютер</h3>
+				<table>
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Число</th>
+							<th>Быки</th>
+							<th>Коровы</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr ng-hide="ctrl.IsComplete">
+							<td></td>
+							<td>{{ctrl.Number}}</td>
+							<td>
+								<form ng-submit="ctrl.addStep(ctrl.Number, ctrl.Bulls, ctrl.Cows)">
+									<input type="text" ng-model="ctrl.Bulls" autocomplete="off" style="margin: 0;" />
+								</form>
+							</td>
+							<td>
+								<form ng-submit="ctrl.addStep(ctrl.Number, ctrl.Bulls, ctrl.Cows)">
+									<input type="text" ng-model="ctrl.Cows" autocomplete="off" style="margin: 0;" />
+								</form>
+							</td>
+						</tr>
+						<tr ng-hide="ctrl.IsComplete">
+							<td></td>
+							<td></td>
+							<td>
+								<button class="button tiny" style="margin: 0;" ng-click="ctrl.addStep(ctrl.Number, ctrl.Bulls, ctrl.Cows)">Сделать ход</button>
+							</td>
+							<td>
+								<button class="button tiny" style="margin: 0;" ng-click="ctrl.rollback()">Отменить ход</button>
+							</td>
+						</tr>
+						<tr ng-show="ctrl.IsComplete">
+							<td></td>
+							<td>
+								<button class="button tiny" style="margin: 0;" ng-click="ctrl.start()">Сыграть еще</button>
+							</td>
+							<td colspan="2"></td>
+						</tr>
+					</tfoot>
+					<tbody>
+						<tr ng-repeat="step in ctrl.Steps">
+							<td>{{$index + 1}}</td>
+							<td>{{step.Number}}</td>
+							<td>{{step.Bulls}}</td>
+							<td>{{step.Cows}}</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 			<div class="large-6 columns" ng-controller="ProposerCtrl as ctrl">
 				<h3>Игрок</h3>
@@ -111,9 +162,7 @@
 					{
 						var step = self.Proposer.check(number);
 						this.Steps.push(step);
-						if (number.length === step.Bulls) {
-							self.IsComplete = true;
-						}
+						self.IsComplete = number.length === step.Bulls;
 						self.Number = "";
 					}
 					catch (e)
@@ -127,7 +176,52 @@
 			.controller("SolverCtrl", function ()
 			{
 				var self = this;
-				self.Solver = new DP.Solver();
+				
+				self.start = function ()
+				{
+					self.Solver = new DP.Solver();
+					self.Number = self.Solver.getNumber();
+					self.Bulls = 0;
+					self.Cows = 0;
+					self.IsComplete = false;
+					self.Steps = [];
+				};
+				
+				self.rollback = function ()
+				{
+					if (self.Steps.length)
+					{
+						var s = self.Steps.pop();
+						self.Solver.rollback();
+						self.Number = s.Number;
+						self.Bulls = s.Bulls;
+						self.Cows = s.Cows;
+					}
+				};
+				
+				self.addStep = function (number, bulls, cows)
+				{
+					try
+					{
+						bulls = bulls ? bulls * 1 : 0;
+						cows = cows ? cows * 1 : 0;
+						var step = self.Solver.addStep(number, bulls, cows);
+						self.Steps.push(step);
+						self.IsComplete = number.length == step.Bulls;
+						if (!self.IsComplete)
+						{
+							self.Number = self.Solver.getNumber();
+							self.Bulls = 0;
+							self.Cows = 0;
+						}
+					}
+					catch (e)
+					{
+						alert(e);
+					}
+				};
+				
+				self.start();
 			});
 	</script>
   </body>

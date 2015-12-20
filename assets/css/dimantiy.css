@@ -23,3 +23,7 @@ nav {
 table {
 	width: 100%;
 }
+
+table .button {
+	width: 100%;
+}
