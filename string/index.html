@@ -34,6 +34,7 @@
 				<button class="button" onclick="play('G')">Соль - 440Гц</button>
 				<button class="button" onclick="play('A')">Ля - 466Гц</button>
 				<button class="button" onclick="play('H')">Си - 494Гц</button>
+				<button class="button" onclick="play('C2')">До - 524Гц</button>
 			</div>
 		</div>
 	</article>
@@ -52,7 +53,7 @@
     <script src="../assets/js/vendor/jquery.js"></script>
     <script src="../assets/js/foundation.min.js"></script>
 	<script src="../assets/js/dimantiy.js"></script>
-	<script src="assets/js/vendor/riffwave.js"></script>
+	<!--<script src="assets/js/vendor/riffwave.js"></script>-->
 	<script src="string.js"></script>
     <script>
       $(document).foundation();
@@ -66,7 +67,7 @@
 			}
 		}
 		(function (notes) {
-			var Q = 977 / 440;
+			var Q = 880 / 440;
 			var keys = {
 				C: 262,
 				D: 294,
@@ -75,12 +76,13 @@
 				G: 392,
 				A: 440,
 				B: 466,
-				H: 494
+				H: 494,
+				C2: 524
 			};
 			for (var k in keys) {
 				notes[k] = new DP.String({ Acceleration: keys[k] * Q });
 			}
-			notes['A'] = new DP.String({ Acceleration: 977 });
+			//notes['A'] = new DP.String({ Acceleration: 977 });
 			for (var n in notes) {
 				notes[n].run();
 			}

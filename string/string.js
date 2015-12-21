@@ -11,17 +11,21 @@
 	DP.String = function (settings)
 	{
 		settings = settings || {};
-		this._Points = settings.Points || [0, 1, 0];
-		this._Frequency = settings.Frequency || 10050;
-		this._Resistance = settings.Resistance || 2;
+		this._Points = settings.Points || [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 0];
+		this._Frequency = settings.Frequency || 22050;
+		this._Resistance = settings.Resistance || 3;
 		this._Acceleration = settings.Acceleration || 1000; // 100 ~ 45Hz
 		this._Length = settings.Length || 1;
 		this._Harmonics = settings.Harmonics || this._Points.length - 2;
-		this._SoundLength = settings.SoundLength || 3;
+		this._SoundLength = settings.SoundLength || 2;
 		
+		this._amplitude = [];
+		this._freq = [];
 		this._frames = [this._Points];
 		this._sound = [this._fft(this._Points)];
 	};
+	
+	DP.String._harmonicsHash = {};
 	
 	var stringP = DP.String.prototype;
 	
@@ -72,7 +76,7 @@
 	
 	stringP._getHarmonic = function (n, length)
 	{
-		this._harmonicsHash = this._harmonicsHash || {};
+		this._harmonicsHash = this._harmonicsHash || DP.String._harmonicsHash;
 		this._harmonicsHash[length] = this._harmonicsHash[length] || {};
 		this._harmonicsHash[length][n] = this._harmonicsHash[length][n] || this._calcHarmonic(n, length);
 		return this._harmonicsHash[length][n];
@@ -85,13 +89,25 @@
 		for (var h = 0; h < this._Harmonics; h++)
 		{
 			var harmonic = this._getHarmonic(h, points.length);
+			var amplitude = 0;
 			for (var p = 1; p < points.length - 1; p++)
 			{
-				sum += points[p] * harmonic[p];
+				amplitude += points[p] * harmonic[p];
 			}
+			amplitude /= points.length;
+			sum += amplitude;
+			this._amplitude[h] = Math.max(this._amplitude[h] || 0, Math.abs(amplitude));
+			this._freqP = this._freqP || [];
+			this._freqP[h] = this._freqP[h] || 0; 
+			this._freq[h] = this._freq[h] || 0;
+			if (this._freqP[h] > 0 && amplitude <= 0)
+			{
+				this._freq[h] += 1 / this._SoundLength;
+			}
+			this._freqP[h] = amplitude; 
 		}
 		
-		return sum / this._Points.length * 2;
+		return sum;
 	};
 	
 	stringP._next = function ()
@@ -104,21 +120,8 @@
 			frame.push(this._u(x, t));
 		}
 		this._frames.push(frame);
-		this._sound.push(this._fft(frame) * 32767);
+		this._sound.push(this._fft(frame));
 	};
-	
-	// stringP.setPoints = function (points)
-	// {
-	// 	this._Points = points;
-	// 	this._frames = [this._Points];
-	// 	this._sound = [this._fft(this._Points) * 32767];
-	// };
-	// 
-	// stringP.getFrame = function (index)
-	// {
-	// 	index = Math.max(Math.min(0, index), this._frames.length - 1);
-	// 	return this._frames[index];
-	// };
 	
 	stringP.getNoteFrequence = function ()
 	{
@@ -146,18 +149,35 @@
 	
 	stringP.play = function ()
 	{
-		if (!this._audio)
+		if (!this._context)
 		{
-			var wave = new RIFFWAVE();
-			wave.header.sampleRate = this._Frequency;
-			wave.header.numChannels = 1;
-			wave.header.bitsPerSample = 16;
-			wave.Make(this._sound);
-			var audio = new Audio();
-			audio.src = wave.dataURI;
-			this._audio = audio;
+			try
+			{
+				this._context = DP.String._context =
+					DP.String._context || new (window.AudioContext || window.webkitAudioContext)();
+			}
+			catch (e)
+			{
+				alert(e);
+				return;
+			}
 		}
-		this._audio.play();
+		if (!this._buffer)
+		{
+				this._buffer = this._context.createBuffer(1, this._sound.length, this._Frequency);
+				var data = this._buffer.getChannelData(0);
+				for (var i = 0; i < this._sound.length; i++)
+				{
+					data[i] = this._sound[i];
+				}
+		}
+		
+		var source = this._context.createBufferSource();
+		source.buffer = this._buffer;
+		source.connect(this._context.destination);
+		source.start();
+		console.log(this._amplitude);
+		console.log(this._freq);
 	};
 	
 	stringP = null;
