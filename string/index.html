@@ -27,14 +27,22 @@
 		</div>
 		<div class="row">
 			<div class="large-12 columns">
+				<h3>Ноты</h3>
 				<button class="button" onclick="play('C')">До - 262Гц</button>
 				<button class="button" onclick="play('D')">Ре - 294Гц</button>
 				<button class="button" onclick="play('E')">Ми - 330Гц</button>
 				<button class="button" onclick="play('F')">Фа - 349Гц</button>
-				<button class="button" onclick="play('G')">Соль - 440Гц</button>
-				<button class="button" onclick="play('A')">Ля - 466Гц</button>
-				<button class="button" onclick="play('H')">Си - 494Гц</button>
+				<button class="button" onclick="play('G')">Соль - 392Гц</button>
+				<button class="button" onclick="play('A')">Ля - 440Гц</button>
+				<button class="button" onclick="play('B')">Си - 494Гц</button>
 				<button class="button" onclick="play('C2')">До - 524Гц</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">
+				<h3>Мелодии</h3>
+				<button class="button" onclick="playSong('JB')">Jingle Bells</button>
+				<button class="button" onclick="playSong('LT')">Ёлочка</button>
 			</div>
 		</div>
 	</article>
@@ -59,14 +67,23 @@
       $(document).foundation();
     </script>
 	<script>
-		var notes = {};
+		var strings = {};
+		var melodies = {};
 		function play(note) {
-			var n = notes[note];
-			if (n) {
-				n.play();
+			var s = strings[note];
+			if (s) {
+				s.play();
 			}
 		}
-		(function (notes) {
+		function playSong(name)
+		{
+			var m = melodies[name];
+			if (m)
+			{
+				m.toggle();
+			}
+		}
+		(function (strings, melodies) {
 			var Q = 880 / 440;
 			var keys = {
 				C: 262,
@@ -75,18 +92,129 @@
 				F: 349,
 				G: 392,
 				A: 440,
-				B: 466,
-				H: 494,
+				B: 494,
 				C2: 524
 			};
 			for (var k in keys) {
-				notes[k] = new DP.String({ Acceleration: keys[k] * Q });
+				strings[k] = new DP.String({
+					Acceleration: keys[k] * Q,
+					Harmonics: 5
+				});
 			}
-			//notes['A'] = new DP.String({ Acceleration: 977 });
-			for (var n in notes) {
-				notes[n].run();
+			for (var s in strings) {
+				strings[s].run();
 			}
-		})(notes);
+			
+			melodies["JB"] = new DP.Melody({
+				Tick: 200,
+				Strings: strings,
+				Notes: [
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 4 },
+					
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 4 },
+					
+					{ Key: "E", Length: 2 },
+					{ Key: "G", Length: 2 },
+					{ Key: "C", Length: 2 },
+					{ Key: "D", Length: 2 },
+					
+					{ Key: "E", Length: 4 },
+					
+					{ Key: "F", Length: 2 },
+					{ Key: "F", Length: 2 },
+					{ Key: "F", Length: 3 },
+					{ Key: "F", Length: 1 },
+					
+					{ Key: "F", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 1 },
+					{ Key: "E", Length: 1 },
+					
+					{ Key: "E", Length: 2 },
+					{ Key: "D", Length: 2 },
+					{ Key: "D", Length: 2 },
+					{ Key: "E", Length: 2 },
+					
+					{ Key: "D", Length: 4 },
+					{ Key: "G", Length: 4 },
+					
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 4 },
+					
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 4 },
+					
+					{ Key: "E", Length: 2 },
+					{ Key: "G", Length: 2 },
+					{ Key: "C", Length: 2 },
+					{ Key: "D", Length: 2 },
+					
+					{ Key: "E", Length: 4 },
+					
+					{ Key: "F", Length: 2 },
+					{ Key: "F", Length: 2 },
+					{ Key: "F", Length: 3 },
+					{ Key: "F", Length: 1 },
+					
+					{ Key: "F", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 2 },
+					{ Key: "E", Length: 1 },
+					{ Key: "E", Length: 1 },
+					
+					{ Key: "G", Length: 2 },
+					{ Key: "G", Length: 2 },
+					{ Key: "F", Length: 2 },
+					{ Key: "D", Length: 2 },
+					
+					{ Key: "C", Length: 4 }
+				]
+			});
+			
+			melodies["LT"] = new DP.Melody({
+				Tick: 400,
+				Strings: strings,
+				Notes: [
+					{ Key: "G", Length: 2 },
+					{ Key: "E", Length: 1 },
+					{ Key: "E", Length: 1 },
+					
+					{ Key: "G", Length: 2 },
+					{ Key: "E", Length: 1 },
+					{ Key: "E", Length: 1 },
+					
+					{ Key: "G", Length: 1 },
+					{ Key: "F", Length: 1 },
+					{ Key: "E", Length: 1 },
+					{ Key: "D", Length: 1 },
+					
+					{ Key: "C", Length: 4 },
+					
+					{ Key: "A", Length: 2 },
+					{ Key: "C2", Length: 1 },
+					{ Key: "A", Length: 1 },
+					
+					{ Key: "G", Length: 2 },
+					{ Key: "E", Length: 1 },
+					{ Key: "E", Length: 1 },
+					
+					{ Key: "G", Length: 1 },
+					{ Key: "F", Length: 1 },
+					{ Key: "E", Length: 1 },
+					{ Key: "D", Length: 1 },
+					
+					{ Key: "C", Length: 4 }
+				]
+			});
+			
+		})(strings, melodies);
 	</script>
   </body>
 </html>

@@ -11,7 +11,7 @@
 	DP.String = function (settings)
 	{
 		settings = settings || {};
-		this._Points = settings.Points || [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 0];
+		this._Points = settings.Points || this._getTrianglePoints(settings.Harmonics || 3);
 		this._Frequency = settings.Frequency || 22050;
 		this._Resistance = settings.Resistance || 3;
 		this._Acceleration = settings.Acceleration || 1000; // 100 ~ 45Hz
@@ -28,6 +28,57 @@
 	DP.String._harmonicsHash = {};
 	
 	var stringP = DP.String.prototype;
+	
+	stringP._getTrianglePoints = function (n)
+	{
+		var points = [];
+		points.push(0);
+		for (var i = 0; i < n; i++)
+		{
+			var p = (i + 1) / n;
+			//var p = i < n / 2 ? (i + 1) / (n + 1) : (n - i) / (n + 1);
+			points.push(p);
+		}
+		points.push(0);
+		return points;
+	};
+	
+	stringP._getRoyalPoints = function (n)
+	{
+		var points = [];
+		var weight = [
+			103,
+			66,
+			25,
+			29,
+			10,
+			51,
+			14,
+			26,
+			23,
+			25,
+			24,
+			13,
+			17,
+			8
+		];
+		weight.length = Math.min(n, weight.length);
+		points.push(0);
+		for (var i = 0; i < n; i++)
+		{
+			var p = 0;
+			var s = 0;
+			for (var j = 0; j < n; j++)
+			{
+				p += weight[j] * Math.sin(Math.PI * (j + 1) * (i + 1) / (n + 1));
+				s += weight[j];
+			}
+			p /= s;
+			points.push(p);
+		}
+		points.push(0);
+		return points;
+	};
 	
 	stringP._u = function (x, t)
 	{
@@ -176,10 +227,77 @@
 		source.buffer = this._buffer;
 		source.connect(this._context.destination);
 		source.start();
-		console.log(this._amplitude);
-		console.log(this._freq);
+		// console.log(this._amplitude);
+		// console.log(this._freq);
 	};
 	
 	stringP = null;
+	
+	
+	DP.Melody = function (settings)
+	{
+		settings = settings || {};
+		this._Tick = settings.Tick || 100;
+		this._Strings = settings.Strings || {};
+		this._Notes = settings.Notes || [];
+		
+		this._play = false;
+		this._offset = 0;
+		
+		this._timer = setInterval(this._onTick.bind(this), this._Tick);
+	};
+	
+	var melodyP = DP.Melody.prototype;
+	
+	melodyP.play = function ()
+	{
+		this._play = true;
+	};
+	
+	melodyP.pause = function ()
+	{
+		this._play = false;
+	};
+	
+	melodyP.stop = function ()
+	{
+		this._play = false;
+		this._offset = 0;
+	};
+	
+	melodyP.toggle = function ()
+	{
+		return this._play ? this.stop() : this.play();
+	};
+	
+	melodyP._onTick = function ()
+	{
+		if (this._play)
+		{
+			var offset = 0;
+			for (var i = 0; i < this._Notes.length; i++)
+			{
+				var n = this._Notes[i];
+				if (offset === this._offset)
+				{
+					var s = this._Strings[n.Key];
+					if (s)
+					{
+						s.play();
+					}
+				}
+				offset += n.Length;
+			}
+			this._offset++;
+			
+			if (this._offset > offset)
+			{
+				this.stop();
+			}
+		}
+		//console.log(this._offset);
+	};
+	
+	melodyP = null;
 	
 })();
