@@ -1,0 +1,28 @@
+{
+  "name": "dimantiy.github.io",
+  "version": "1.0.0",
+  "description": "Collection of works",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimantiy/dimantiy.github.io.git"
+  },
+  "keywords": [
+    "JavaScript"
+  ],
+  "author": "Dmitriy Pankov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dimantiy/dimantiy.github.io/issues"
+  },
+  "homepage": "https://github.com/dimantiy/dimantiy.github.io#readme",
+  "devDependencies": {
+    "handlebars": "^4.0.5",
+    "metalsmith": "^2.1.0",
+    "metalsmith-layouts": "^1.4.2",
+    "metalsmith-markdown": "^0.2.1"
+  }
+}
