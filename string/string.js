@@ -37,6 +37,7 @@
 		{
 			var p = (i + 1) / n;
 			//var p = i < n / 2 ? (i + 1) / (n + 1) : (n - i) / (n + 1);
+			//var p = 1 / Math.sqrt(i + 1);
 			points.push(p);
 		}
 		points.push(0);
@@ -239,7 +240,8 @@
 		settings = settings || {};
 		this._Tick = settings.Tick || 100;
 		this._Strings = settings.Strings || {};
-		this._Notes = settings.Notes || [];
+		this._Melody = settings.Melody || '';
+		this._Notes = settings.Notes || this._parseMelody(this._Melody);
 		
 		this._play = false;
 		this._offset = 0;
@@ -268,6 +270,21 @@
 	melodyP.toggle = function ()
 	{
 		return this._play ? this.stop() : this.play();
+	};
+	
+	melodyP._parseMelody = function (melody)
+	{
+		var notes = [];
+		var pairs = melody.split(' ');
+		for (var i = 0; i < pairs.length; i++)
+		{
+			var p = pairs[i].split(':');
+			notes.push({
+				Key: p[0],
+				Length: parseInt(p[1])
+			});
+		}
+		return notes;
 	};
 	
 	melodyP._onTick = function ()
