@@ -6,10 +6,15 @@ header {
 }
 
 header h1,
-header h2
-{
+header h2,
+header a,
+header a:hover {
 	text-align: center;
 	color: #FFF;
+}
+
+footer {
+	margin-top: 2em;
 }
 
 article {

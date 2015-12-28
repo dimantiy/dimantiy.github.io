@@ -13,7 +13,10 @@ metalsmith(__dirname)
 	.destination('.')
 	.clean(false)
 	.use(markdown())
-	.use(layouts('handlebars'))
+	.use(layouts({
+		engine: 'handlebars',
+		partials: 'partials'
+	}))
 	.use(function (files) {
 		for (var f in files) {
 			console.log(f);

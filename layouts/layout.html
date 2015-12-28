@@ -4,10 +4,10 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>dimantiy.github.io</title>
-	<link rel="stylesheet" href="assets/css/foundation.css" />
-	<link rel="stylesheet" href="assets/css/dimantiy.css" />
-	<script src="assets/js/vendor/modernizr.js"></script>
+	<title>{{title}}</title>
+	
+	{{> header }}
+	
 </head>
 
 <body>
@@ -15,30 +15,15 @@
 	<header>
 		<div class="row">
 			<div class="large-12 columns">
-				<h1>dimantiy.github.io</h1>
+				<h1><a href="http://dimantiy.github.io/">dimantiy.github.io</a></h1>
 			</div>
 		</div>
 	</header>
 
 	{{{contents}}}
-
-	<footer>
-		<div class="row">
-			<div class="large-12 columns">
-				<p>
-					&copy; Dmitriy Pankov
-				</p>
-			</div>
-		</div>
-	</footer>
-
-
-	<script src="assets/js/vendor/jquery.js"></script>
-	<script src="assets/js/foundation.min.js"></script>
-	<script src="assets/js/dimantiy.js"></script>
-	<script>
-		$(document).foundation();
-	</script>
+	
+	{{> footer }}
+	
 </body>
 
 </html>
