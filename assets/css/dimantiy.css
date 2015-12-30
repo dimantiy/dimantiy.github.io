@@ -35,6 +35,15 @@ table .button {
 
 /* Xmas Theme */
 
+a {
+	color: #C00;
+}
+
+a:hover,
+a:focus {
+	color: #900;
+}
+
 header {
 	background-color: #C00;
 	box-shadow: inset 0px -7em 3.5em -3.5em #FFF;
