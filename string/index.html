@@ -68,10 +68,17 @@
 	<script>
 		var strings = {};
 		var melodies = {};
+        
+        function _setHash(page)
+        {
+            window.location.hash = "p=" + page;
+        }
 		
-		function play(note) {
+		function play(note)
+        {
 			var s = strings[note];
-			if (s) {
+			if (s)
+            {
 				s.play();
 			}
 		}
@@ -82,6 +89,7 @@
 			if (m)
 			{
 				m.toggle();
+                _setHash(name);
 			}
 		}
 		
@@ -174,8 +182,14 @@
 					document.getElementById("songs").style.display = "";
 				}
 			}
-			
-			setTimeout(_createString, 0);
+			if (window.AudioContext || window.webkitAudioContext)
+            {
+			    setTimeout(_createString, 0);
+            }
+            else
+            {
+                log("Ваш браузер не поддерживает AudioContext. Попробуйте открыть страницу в Google Chrome.");
+            }
 			
 		})(strings, melodies);
 	</script>
