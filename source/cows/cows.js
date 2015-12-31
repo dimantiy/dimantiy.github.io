@@ -272,7 +272,15 @@
 		{
 			this._index++;
 		}
-		accept(this._index < this._numbers.length, "Невозможно определить число");
+        try
+        {
+            accept(this._index < this._numbers.length, "Невозможно определить число");
+        }
+		catch (e)
+        {
+            this.rollback();
+            throw e;
+        }
 		return this._numbers[this._index++];
 	};
 	

@@ -111,6 +111,10 @@ path: ../
 	<script src="cows.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 	<script>
+        function _setHash(page)
+        {
+            window.location.hash = "p=" + page;
+        }
 		angular.module("CowsApp", [])
 			.controller("ProposerCtrl", function ()
 			{
@@ -122,6 +126,7 @@ path: ../
 					self.Steps = [];
 					self.IsComplete = false;
 					self.Number = "";
+                    _setHash("player_start");
 				};
 				
 				self.addStep = function (number)
@@ -132,6 +137,10 @@ path: ../
 						this.Steps.push(step);
 						self.IsComplete = number.length === step.Bulls;
 						self.Number = "";
+                        if (self.IsComplete)
+                        {
+                            _setHash("player_finish");
+                        }
 					}
 					catch (e)
 					{
@@ -153,6 +162,7 @@ path: ../
 					self.Cows = 0;
 					self.IsComplete = false;
 					self.Steps = [];
+                    _setHash("computer_start");
 				};
 				
 				self.rollback = function ()
@@ -174,7 +184,6 @@ path: ../
 						bulls = bulls ? bulls * 1 : 0;
 						cows = cows ? cows * 1 : 0;
 						var step = self.Solver.addStep(number, bulls, cows);
-						self.Steps.push(step);
 						self.IsComplete = number.length == step.Bulls;
 						if (!self.IsComplete)
 						{
@@ -182,6 +191,11 @@ path: ../
 							self.Bulls = 0;
 							self.Cows = 0;
 						}
+                        else
+                        {
+                            _setHash("computer_finish");
+                        }
+						self.Steps.push(step);
 					}
 					catch (e)
 					{
