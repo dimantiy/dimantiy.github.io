@@ -13,6 +13,15 @@ metalsmith(__dirname)
 	.destination('.')
 	.clean(false)
 	.use(markdown())
+	.use(function (files) {
+		for (var f in files) {
+            var sep = f.split("\\");
+            var arr = [];
+            arr.length = sep.length;
+            var root = arr.join("../");
+			files[f].root = root;
+		}
+	})
 	.use(layouts({
 		engine: 'handlebars',
 		partials: 'partials'
