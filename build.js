@@ -3,13 +3,7 @@ var markdown = require('metalsmith-markdown');
 var layouts = require('metalsmith-layouts');
 
 metalsmith(__dirname)
-	// .ignore('node_modules')
-	// .ignore('.*')
-	// .ignore('*.saz')
-	// .ignore('build.*')
-	// .ignore('package.json')
-	// .ignore('README')
-	.source('./source')
+	.source('./_source')
 	.destination('.')
 	.clean(false)
 	.use(markdown())
@@ -24,7 +18,8 @@ metalsmith(__dirname)
 	})
 	.use(layouts({
 		engine: 'handlebars',
-		partials: 'partials'
+        directory: '_layouts',
+		partials: '_partials'
 	}))
 	.use(function (files) {
 		for (var f in files) {
