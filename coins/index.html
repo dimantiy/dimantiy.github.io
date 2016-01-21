@@ -1,0 +1,138 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Coins - dimantiy.github.io</title>
+	
+	<link rel="stylesheet" href="../assets/css/foundation.css" />
+	<link rel="stylesheet" href="../assets/css/dimantiy.css" />
+	<link rel="stylesheet" href="../assets/css/themes/xmas.css" />
+	<script src="../assets/js/vendor/modernizr.js"></script>
+	<script src="../assets/js/vendor/jquery.js"></script>
+	<script src="../assets/js/foundation.min.js"></script>
+	<script src="../assets/js/dimantiy.js"></script>
+	<script>
+		$(document).foundation();
+	</script>	
+</head>
+
+<body class="xmas">
+
+	<header>
+		<div class="row">
+			<div class="large-12 columns">
+				<h1><a href="../index.html">dimantiy.github.io</a></h1>
+			</div>
+		</div>
+	</header>
+
+	
+	<article ng-app="CoinsApp">
+		<div class="row">
+			<div class="large-12 columns">
+				<h1>Бросание монетки</h1>
+			</div>
+		</div>
+        <section ng-controller="CoinsCtrl as ctrl">
+            <div class="row">
+                <div class="large-12 columns">
+                    <ul class="button-group even-8">
+                        <li ng-repeat="coin in ctrl.Coins" >
+                            <button ng-click="ctrl.flip(coin.Count)">{{coin.Name}}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" ng-repeat="item in ctrl.History">
+                <div class="large-12 columns">
+                    <ul class="button-group even-8">
+                        <li ng-repeat="coin in ctrl.Coins">
+                            <button ng-show="coin.Index < item.Count" ng-class="coin.Index > item.Value && 'disabled' || ''">{{coin.Name}}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+	</article>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script>
+        function _setHash(page)
+        {
+            window.location.hash = "p=" + page;
+        }
+		angular.module("CoinsApp", [])
+			.controller("CoinsCtrl", function ()
+			{
+				var self = this;
+                var count = 8;
+                
+                self.Coins = [];
+                self.History = [];
+                
+                for (var i = 0; i < count; i++)
+                {
+                    self.Coins.push({
+                        Name: "¢",
+                        Index: i,
+                        Count: i
+                    });
+                }
+                
+                self.flip = function (count)
+                {
+                    _setHash(count);
+                    count += 1;
+                    self.History.unshift({
+                        Value: Math.floor(Math.random() * count) % count,
+                        Count: count
+                    });
+                }
+			});
+	</script>
+	
+	<footer>
+		<div class="row">
+			<div class="large-12 columns">
+				<p>
+					&copy; Дмитрий Паньков 2015 
+				</p>
+			</div>
+		</div>
+	</footer>
+	
+	<!-- Yandex.Metrika counter -->
+	<script type="text/javascript">
+	    (function (d, w, c) {
+	        (w[c] = w[c] || []).push(function() {
+	            try {
+	                w.yaCounter34499770 = new Ya.Metrika({
+	                    id:34499770,
+	                    clickmap:true,
+	                    trackLinks:true,
+	                    accurateTrackBounce:true,
+	                    webvisor:true,
+	                    trackHash:true
+	                });
+	            } catch(e) { }
+	        });
+	
+	        var n = d.getElementsByTagName("script")[0],
+	            s = d.createElement("script"),
+	            f = function () { n.parentNode.insertBefore(s, n); };
+	        s.type = "text/javascript";
+	        s.async = true;
+	        s.src = "https://mc.yandex.ru/metrika/watch.js";
+	
+	        if (w.opera == "[object Opera]") {
+	            d.addEventListener("DOMContentLoaded", f, false);
+	        } else { f(); }
+	    })(document, window, "yandex_metrika_callbacks");
+	</script>
+	<noscript><div><img src="https://mc.yandex.ru/watch/34499770" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+	<!-- /Yandex.Metrika counter -->	
+</body>
+
+</html>

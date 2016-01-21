@@ -1,0 +1,67 @@
+---
+title: Coins - dimantiy.github.io
+layout: layout.html
+---
+	<article ng-app="CoinsApp">
+		<div class="row">
+			<div class="large-12 columns">
+				<h1>Бросание монетки</h1>
+			</div>
+		</div>
+        <section ng-controller="CoinsCtrl as ctrl">
+            <div class="row">
+                <div class="large-12 columns">
+                    <ul class="button-group even-8">
+                        <li ng-repeat="coin in ctrl.Coins" >
+                            <button ng-click="ctrl.flip(coin.Count)">{{coin.Name}}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" ng-repeat="item in ctrl.History">
+                <div class="large-12 columns">
+                    <ul class="button-group even-8">
+                        <li ng-repeat="coin in ctrl.Coins">
+                            <button ng-show="coin.Index < item.Count" ng-class="coin.Index > item.Value && 'disabled' || ''">{{coin.Name}}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+	</article>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script>
+        function _setHash(page)
+        {
+            window.location.hash = "p=" + page;
+        }
+		angular.module("CoinsApp", [])
+			.controller("CoinsCtrl", function ()
+			{
+				var self = this;
+                var count = 8;
+                
+                self.Coins = [];
+                self.History = [];
+                
+                for (var i = 0; i < count; i++)
+                {
+                    self.Coins.push({
+                        Name: "¢",
+                        Index: i,
+                        Count: i
+                    });
+                }
+                
+                self.flip = function (count)
+                {
+                    _setHash(count);
+                    count += 1;
+                    self.History.unshift({
+                        Value: Math.floor(Math.random() * count) % count,
+                        Count: count
+                    });
+                }
+			});
+	</script>
