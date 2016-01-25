@@ -1,0 +1,97 @@
+---
+title: Coins - dimantiy.github.io
+layout: layout.html
+---
+    <style>
+        .coins-container {
+            padding-left: 6em;
+            min-height: 10em;
+            position: relative;
+        }
+        
+        .coin {
+            display: inline-block;
+            width: 4em;
+            height: 4em;
+            border-radius: 2em;
+            border: 0.125em solid #000;
+            margin: 1em;
+        }
+        
+        .coin.heads {
+            background: #FFF;
+        }
+        
+        .coin.tails {
+            background: #000;
+        }
+        
+        .coin-button {
+            display: block;
+            overflow: hidden;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .coin-button .tails {
+            border-left: 3.75em solid #FFF;
+            border-bottom: 3.75em solid #000;
+        }
+        
+        .coin-result {
+            display: block;
+            width: 6em;
+            text-align: center;
+            position: absolute;
+            top: 6em;
+            left: 0;
+        }
+    </style>
+	<article ng-app="CoinsApp">
+		<div class="row">
+			<div class="large-12 columns">
+				<h1>Монетка</h1>
+			</div>
+		</div>
+        <div class="row" ng-controller="CoinsCtrl as ctrl">
+            <div class="large-12 columns coins-container">
+                <div class="coin coin-button" ng-click="ctrl.flip()">
+                    <div class="tails"></div>
+                </div>
+                <div class="coin-result">{{ctrl.Heads}}&nbsp;/&nbsp;{{ctrl.Tails}}<br/>{{ctrl.Coins.length}}</div>
+                <div class="coin" ng-class="coin.Value && 'heads' || 'tails'" ng-repeat="coin in ctrl.Coins"></div>
+            </div>
+        </div>
+	</article>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script>
+        function _setHash(page)
+        {
+            window.location.hash = "p=" + page;
+        }
+		angular.module("CoinsApp", [])
+			.controller("CoinsCtrl", function ()
+			{
+				var self = this;
+                
+                var coins = self.Coins = [];
+                self.Heads = 0;
+                self.Tails = 0;
+                
+                self.flip = function ()
+                {
+                    var coin = {
+                        Value: Math.floor(Math.random() * 2) % 2 // 1 - Heads, 2 - Tails
+                    };
+                    coins.unshift(coin);
+                    self.Heads += coin.Value;
+                    self.Tails += 1 - coin.Value;
+                    _setHash("f" + (Math.floor(coins.length / 10) || "") + "x");
+                }
+                
+                _setHash("fx");
+			});
+	</script>
