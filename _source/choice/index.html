@@ -1,0 +1,346 @@
+---
+title: Coins - dimantiy.github.io
+layout: layout.html
+---
+	<article ng-app="ChoiceApp">
+		<div class="row">
+			<div class="large-12 columns">
+				<h1>Вариантный сектор</h1>
+			</div>
+		</div>
+        <div class="row" ng-controller="ChoiceCtrl as ctrl">
+            <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Option">
+				<h2>Альтернативы</h2>
+				<table>
+					<thead>
+						<tr>
+							<th width="50">#</th>
+							<th>Название</th>
+							<th width="100"></th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<td></td>
+							<td>
+								<form ng-submit="ctrl.addOption(ctrl.NewOption)">
+									<input type="text" ng-model="ctrl.NewOption" style="margin: 0" placeholder="Новая альтернатива" />
+								</form>
+							</td>
+							<td>
+								<a ng-click="ctrl.addOption(ctrl.NewOption)">Добавить</a>
+							</td>
+						</tr>
+					</tfoot>
+					<tbody>
+						<tr ng-repeat="opt in ctrl.Model.Options">
+							<td>{{$index + 1}}</td>
+							<td>{{opt.Name}}</td>
+							<td>
+								<a ng-click="ctrl.removeOption(opt)">Удалить</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+			
+            <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Criteria">
+				<h2>Критерии</h2>
+				<table>
+					<thead>
+						<tr>
+							<th width="50">#</th>
+							<th>Название</th>
+							<th width="100">Вес</th>
+							<th width="100"></th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<td></td>
+							<td colspan="2">
+								<form ng-submit="ctrl.addCriterion(ctrl.NewCrit)">
+									<input type="text" ng-model="ctrl.NewCrit" style="margin: 0" placeholder="Новый критерий" />
+								</form>
+							</td>
+							<td>
+								<a ng-click="ctrl.addCriterion()">Добавить</a>
+							</td>
+						</tr>
+					</tfoot>
+					<tbody>
+						<tr ng-repeat="crt in ctrl.Model.Criteria">
+							<td>{{$index + 1}}</td>
+							<td>{{crt.Name}}</td>
+							<td>
+								<input type="number" ng-model="crt.Weight" style="margin: 0" />
+							</td>
+							<td>
+								<a ng-click="ctrl.removeCriterion(crt)">Удалить</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+			
+            <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Weight">
+				<h2>Оценки</h2>
+				<table>
+					<thead>
+						<tr>
+							<th width="50">#</th>
+							<th>Альтернатива</th>
+							<th width="200">{{ctrl.Model.CurrentCrit.Name}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="opt in ctrl.Model.Options">
+							<td>{{$index + 1}}</td>
+							<td>{{opt.Name}}</td>
+							<td>
+								<input type="number" ng-model="ctrl.Model.Weight[opt.Id][ctrl.Model.CurrentCrit.Id]" style="margin: 0" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+
+            <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Result">
+				<h2>Результат</h2>
+				<table>
+					<thead>
+						<tr>
+							<th width="50">#</th>
+							<th>Альтернатива</th>
+							<th width="200">Вес</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="opt in ctrl.Model.Options">
+							<td>{{$index + 1}}</td>
+							<td>{{opt.Name}}</td>
+							<td>{{opt.Weight}}</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+			
+			<div class="large-12 columns">
+				<button ng-click="ctrl.prevPage()">Назад</button>
+				<button ng-click="ctrl.nextPage()">Вперед</button>
+			</div>
+        </div>
+	</article>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script>
+		angular.module('ChoiceApp', [])
+			.controller('ChoiceCtrl', function ()
+			{
+				var self = this;
+				var STORE_KEY = 'choice';
+				var HASH_PAGE = 'p';
+				var HASH_CRIT = 'c';
+				var pages = self.Pages = {
+					Option: 'option',
+					Criteria: 'criteria',
+					Weight: 'weight',
+					Result: 'result'
+				};
+				var model = self.Model = restore();
+				model.Options = model.Options || [];
+				model.Criteria = model.Criteria || [];
+				model.Weight = model.Weight || {};
+				model.Page = DP.getHash(HASH_PAGE) || model.Page || pages.Option;
+				model.Page = checkEnum(model.Page, pages, pages.Option);
+				model.CritIndex = DP.getHash(HASH_CRIT) || model.CritIndex || 0;
+				model.CurrentCrit = model.Criteria[model.CritIndex];
+				updateResult();
+				
+				self.NewOption = '';
+				self.NewCrit = '';
+				
+				updateHash();
+				
+				self.addOption = function (name)
+				{
+					var opt = {
+						Id: getId('O'),
+						Weight: 0,
+						Name: name || self.NewOption
+					};
+					model.Options.push(opt);
+					var weight = model.Weight[opt.Id] = {};
+					for (var i = 0; i < model.Criteria.length; i++)
+					{
+						var crit = model.Criteria[i];
+						weight[crit.Id] = 0;
+					}
+					self.NewOption = '';
+					save();
+				};
+				
+				self.removeOption = function (opt)
+				{
+					var i = model.Options.indexOf(opt);
+					if (i >= 0)
+					{
+						model.Options.splice(i, 1);
+					}
+					delete model.Weight[opt.Id];
+					save();
+				};
+				
+				self.addCriterion = function (name)
+				{
+					var crit = {
+						Id: getId('C'),
+						Weight: 0,
+						Name: name || self.NewCrit
+					};
+					model.Criteria.push(crit);
+					for (var key in model.Weight)
+					{
+						model.Weight[key][crit.Id] = 0;
+					}
+					self.NewCrit = '';
+					save();
+				};
+				
+				self.removeCriterion = function (crit)
+				{
+					var i = model.Criteria.indexOf(crit);
+					if (i >= 0)
+					{
+						model.Criteria.splice(i, 1);
+					}
+					for (var key in model.Weight)
+					{
+						delete model.Weight[key][crit.Id];
+					}
+					save();
+				};
+                
+				self.nextPage = function ()
+				{
+					switch (model.Page)
+					{
+						case pages.Criteria:
+							model.Page = pages.Weight;
+							model.CritIndex = 0;
+							model.CurrentCrit = model.Criteria[model.CritIndex];
+							break;
+						case pages.Weight:
+							var i = Math.max(0, Math.min(model.Criteria.length - 1, model.CritIndex)) + 1;
+							if (i < model.Criteria.length)
+							{
+								model.CritIndex = i;
+								model.CurrentCrit = model.Criteria[model.CritIndex];
+							}
+							else
+							{
+								updateResult();
+								model.Page = pages.Result;
+							}
+							break;
+						case pages.Result:
+							// do nothing
+							break;
+						default:
+							model.Page = pages.Criteria;
+							break;
+					}
+					save();
+					updateHash();
+				};
+				
+				self.prevPage = function ()
+				{
+					switch (model.Page)
+					{
+						case pages.Criteria:
+							model.Page = pages.Option;
+							break;
+						case pages.Weight:
+							var i = Math.max(0, Math.min(model.Criteria.length - 1, model.CritIndex)) - 1;
+							if (i >= 0)
+							{
+								model.CritIndex = i;
+								model.CurrentCrit = model.Criteria[model.CritIndex];
+							}
+							else
+							{
+								model.Page = pages.Criteria;
+							}
+							break;
+						case pages.Result:
+							model.Page = pages.Weight;
+							model.CritIndex = model.Criteria.length - 1;
+							model.CurrentCrit = model.Criteria[model.CritIndex];
+							break;
+						default:
+							// do nothing
+							break;
+					}
+					save();
+					updateHash();
+				};
+				
+				function updateHash()
+				{
+					DP.removeHash(HASH_PAGE);
+					DP.removeHash(HASH_CRIT);
+					switch (model.Page)
+					{
+						case pages.Weight:
+							DP.setHash(HASH_CRIT, model.CritIndex);
+						case pages.Option:
+						case pages.Criteria:
+						case pages.Result:
+							DP.setHash(HASH_PAGE, model.Page);
+							break;
+					}
+				}
+				
+				function save()
+				{
+					DP.save(STORE_KEY, angular.toJson(model));
+				};
+				
+				function restore()
+				{
+					return angular.fromJson(DP.restore(STORE_KEY)) || {};
+				};
+				
+				function getId(prefix)
+				{
+					return prefix + ((new Date()) * 1);
+				};
+				
+				function updateResult()
+				{
+					for (var i = 0; i < model.Options.length; i++)
+					{
+						var opt = model.Options[i];
+						opt.Weight = 0;
+						for (var j = 0; j < model.Criteria.length; j++)
+						{
+							var crit = model.Criteria[j];
+							opt.Weight += crit.Weight * model.Weight[opt.Id][crit.Id];
+						}
+					}
+				};
+				
+				function checkEnum(value, enm, def)
+				{
+					for (var k in enm)
+					{
+						if (enm[k] === value)
+						{
+							return value;
+						}
+					}
+					return def;
+				};
+			});
+	</script>
