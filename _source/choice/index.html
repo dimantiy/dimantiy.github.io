@@ -11,6 +11,9 @@ layout: layout.html
         <div class="row" ng-controller="ChoiceCtrl as ctrl">
             <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Option">
 				<h2>Альтернативы</h2>
+				<p>
+					Составьте список возможных вариантов для выбора.
+				</p>
 				<table>
 					<thead>
 						<tr>
@@ -22,20 +25,17 @@ layout: layout.html
 					<tfoot>
 						<tr>
 							<td></td>
-							<td>
-								<form ng-submit="ctrl.addOption(ctrl.NewOption)">
-									<input type="text" ng-model="ctrl.NewOption" style="margin: 0" placeholder="Новая альтернатива" />
-								</form>
-							</td>
-							<td>
-								<a ng-click="ctrl.addOption(ctrl.NewOption)">Добавить</a>
+							<td colspan="2">
+								<a ng-click="ctrl.addOption()">Добавить</a>
 							</td>
 						</tr>
 					</tfoot>
 					<tbody>
 						<tr ng-repeat="opt in ctrl.Model.Options">
 							<td>{{$index + 1}}</td>
-							<td>{{opt.Name}}</td>
+							<td>
+								<input type="text" ng-model="opt.Name" style="margin: 0" placeholder="Альтернатива" />
+							</td>
 							<td>
 								<a ng-click="ctrl.removeOption(opt)">Удалить</a>
 							</td>
@@ -46,6 +46,11 @@ layout: layout.html
 			
             <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Criteria">
 				<h2>Критерии</h2>
+				<p>
+					Составьте список параметров, по которым можно сравнить альтернативы,
+					а такжу укажите для каждого из них степень его значимости по шкале от -1 до -10 для негативных и от 1 до 10 для позитивных.
+					Чем больше по абсолютной величине значение, тем сильнее будет вклад этого критерия в конечную оценку.
+				</p>
 				<table>
 					<thead>
 						<tr>
@@ -58,12 +63,7 @@ layout: layout.html
 					<tfoot>
 						<tr>
 							<td></td>
-							<td colspan="2">
-								<form ng-submit="ctrl.addCriterion(ctrl.NewCrit)">
-									<input type="text" ng-model="ctrl.NewCrit" style="margin: 0" placeholder="Новый критерий" />
-								</form>
-							</td>
-							<td>
+							<td colspan="3">
 								<a ng-click="ctrl.addCriterion()">Добавить</a>
 							</td>
 						</tr>
@@ -71,9 +71,11 @@ layout: layout.html
 					<tbody>
 						<tr ng-repeat="crt in ctrl.Model.Criteria">
 							<td>{{$index + 1}}</td>
-							<td>{{crt.Name}}</td>
 							<td>
-								<input type="number" ng-model="crt.Weight" style="margin: 0" />
+								<input type="text" ng-model="crt.Name" style="margin: 0" placeholder="Критерий" />
+							</td>
+							<td>
+								<input type="number" ng-model="crt.Weight" style="margin: 0" min="-10" max="10" />
 							</td>
 							<td>
 								<a ng-click="ctrl.removeCriterion(crt)">Удалить</a>
@@ -84,7 +86,10 @@ layout: layout.html
             </div>
 			
             <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Weight">
-				<h2>Оценки</h2>
+				<h2>Оценки "{{ctrl.Model.CurrentCrit.Name}}"</h2>
+				<p>
+					Оцените степень проявления критерия "{{ctrl.Model.CurrentCrit.Name}}" для каждой из альтернатив по шкале от 1 до 10.
+				</p>
 				<table>
 					<thead>
 						<tr>
@@ -98,7 +103,7 @@ layout: layout.html
 							<td>{{$index + 1}}</td>
 							<td>{{opt.Name}}</td>
 							<td>
-								<input type="number" ng-model="ctrl.Model.Weight[opt.Id][ctrl.Model.CurrentCrit.Id]" style="margin: 0" />
+								<input type="number" ng-model="ctrl.Model.Weight[opt.Id][ctrl.Model.CurrentCrit.Id]" style="margin: 0" min="0" max="10" />
 							</td>
 						</tr>
 					</tbody>
@@ -107,6 +112,9 @@ layout: layout.html
 
             <div class="large-12 columns" ng-show="ctrl.Model.Page === ctrl.Pages.Result">
 				<h2>Результат</h2>
+				<p>
+					Ниже представлен список альтернатив с вычисленным весом, выражающим степень предпочтительности соответствующего варианта.
+				</p>
 				<table>
 					<thead>
 						<tr>
@@ -116,7 +124,7 @@ layout: layout.html
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="opt in ctrl.Model.Options">
+						<tr ng-repeat="opt in ctrl.Model.Options | orderBy: '-Weight'">
 							<td>{{$index + 1}}</td>
 							<td>{{opt.Name}}</td>
 							<td>{{opt.Weight}}</td>
