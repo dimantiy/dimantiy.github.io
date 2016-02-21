@@ -1,12 +1,12 @@
 var metalsmith = require('metalsmith');
 var markdown = require('metalsmith-markdown');
 var layouts = require('metalsmith-layouts');
+var collections = require('metalsmith-collections');
 
 metalsmith(__dirname)
 	.source('./_source')
 	.destination('.')
 	.clean(false)
-	.use(markdown())
 	.use(function (files) {
 		for (var f in files) {
             var sep = f.split("\\");
@@ -16,6 +16,13 @@ metalsmith(__dirname)
 			files[f].root = root;
 		}
 	})
+    .use(collections({
+        routes: {
+            sortBy: 'date',
+            reverse: true
+        }
+    }))
+	.use(markdown())
 	.use(layouts({
 		engine: 'handlebars',
         directory: '_layouts',
