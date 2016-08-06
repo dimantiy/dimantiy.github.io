@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Simple counter tools">
+<title>Clicker</title>
+<style>
+html, body {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	overflow: hidden;
+	text-align: center;
+}
+table {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	border-collapse: collapse;
+	box-sizing: border-box;
+	font-size: 7em;
+	font-family: monospace;
+	cursor: pointer;
+}
+::selection {
+	color: black;
+	background: none;	
+};
+</style>
+<script>
+function Clicker () {
+	this._storage_key = 'clicker-count';
+	this._storage = window.localStorage || window.sessionStorage || {};
+	this.restore();
+};
+Clicker.prototype.click = function () {
+	this._count++;
+	this.save();
+};
+Clicker.prototype.getCount = function () {
+	return this._count;
+};
+Clicker.prototype.save = function () {
+	this._storage[this._storage_key] = this._count;
+};
+Clicker.prototype.restore = function () {
+	this._count = this._storage[this._storage_key] * 1 || 0;
+};
+Clicker.prototype.reset = function () {
+	this._count = 0;
+	this.save();
+};
+function init() {
+	var node = document.getElementById('clicker');
+	var clicker = new Clicker();
+	function render() {
+		node.innerHTML = clicker.getCount();
+	}
+	function onClick() {
+		clicker.click();
+		render();
+	};
+	document.onclick = onClick;
+
+	render();
+}
+</script>
+</head>
+<body onload="init()">
+	<table><tr><td id="clicker">0</td></tr></table>
+</body>
+</html>
