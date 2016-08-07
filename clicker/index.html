@@ -66,6 +66,7 @@ function init() {
 		clicker.click();
 		render();
 	};
+	document.ontouchend = onClick;
 	document.onclick = onClick;
 
 	render();
