@@ -66,8 +66,11 @@ function init() {
 		clicker.click();
 		render();
 	};
-	document.ontouchend = onClick;
-	document.onclick = onClick;
+	if (document.ontouchend) {
+		document.ontouchend = onClick;
+	} else {
+		document.onclick = onClick;
+	}
 
 	render();
 }
