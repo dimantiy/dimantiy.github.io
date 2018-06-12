@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Наталья</title>
+    <meta charset="utf-8" />
+
+<style type="text/css">
+
+html, body, input {
+    padding: 0;
+    margin: 0;
+    outline: 0;
+    border: 0;
+    font-size: 20px;
+    font-family: Helvetica, sans-serif;
+}
+
+@keyframes show-question {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes show-answer {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.question {
+    padding: 1em 2em;
+    border: 1px solid #DDD;
+    border-radius: 2em;
+    box-sizing: border-box;
+    margin-bottom: 1em;
+    clear: both;
+    float: left;
+    animation: show-question 2s;
+}
+
+.answer {
+    padding: 1em 2em;
+    background: #EEE;
+    border: 1px solid #DDD;
+    border-radius: 2em;
+    box-sizing: border-box;
+    margin-bottom: 1em;
+    clear: both;
+    float: right;
+    animation: show-answer 2s;
+}
+
+#header {
+    background: #EEE;
+    border-bottom: 1px solid #DDD;
+    padding-top: 1.5em;
+}
+
+#avatar {
+    width: 10em;
+    height: 10em;
+    margin: 0 auto;
+    border: 1px solid #DDD;
+    box-sizing: border-box;
+    border-radius: 5em;
+    background: url('natalia.jpg');
+    background-size: 10.5em;
+    background-position: 0% 10%;
+}
+
+#form {
+    width: 80%;
+    margin: 1em auto -1.5em auto;
+}
+
+#input-question {
+    margin: 0;
+    width: 100%;
+    padding: 1em 2em;
+    border: 1px solid #DDD;
+    border-radius: 2em;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-family: Helvetica, sans-serif;
+}
+
+#content {
+    width: 80%;
+    margin: 2.5em auto;
+}
+
+</style>
+
+<script type="text/javascript">
+
+function Natalia() {
+    this._answers = {
+        // Как тебя зовут?
+        "(ты|тебя|твое|ваш|вас) (зовут|имя)": ["Наталья"],
+
+        // Какой у тебя пол?
+        "(пол|женщин|мужчин)": ["Я - женщина!"],
+
+        // Сколько тебе лет?
+        "(тебе|вам) (лет)": ["Мне 43"],
+        "(твой|ваш) (возраст)": ["Мне 43"],
+
+        // Ты любишь учиться?
+        "(учит|учеб)": ["Я люблю учиться"],
+
+        // У тебя есть семья?
+        "(есть) (семья)": ["У меня есть семья"],
+
+        // У тебя есть дети?
+        "(есть) (дети)": ["У меня есть дети"],
+
+        // Что ты думаешь о России?
+        "(росси)": ["Россия - большая страна с огромными возможностями"],
+
+        // Что ты думаешь об университете 20.35?
+        "(что) (думаешь) (20.35|остров)": ["Я думаю, что университет 20.35 - это взгляд в будущее"],
+
+        // Зачем ты едешь на остров?
+        "(зачем|почему) (20.35|остров)": ["Я еду на остров за возможностями"],
+
+        // Важная для тебя ценность?
+        "(важн) (теб|вам|вас)": ["Для меня важно развитие"],
+        "(развит)": ["Для меня важно развитие"],
+
+        // Ты готова вести за собой людей?
+        "(вести) (за) (собой)": ["Я готова вести за собой людей!"],
+
+        // Ты можешь придумывать новые идеи?
+        "(нов) (иде)": ["У меня много новых идей"],
+
+        // Ты любишь общаться?
+        "(общат|общен)": ["Я люблю общаться :)"],
+
+        // Ты умеешь поддерживать командный дух?
+        "(команд) (дух)": ["Я умею поддерживать командный дух!"],
+
+        // Ты готова заниматься новыми рынками?
+        "(нов) (рынк)": ["Я готова заниматься новыми рынками"],
+
+        // Общие фразы
+        "(привет|здравствуй|добр)": ["Привет!"],
+        "(пока|досвидан)": ["Удачи ;)"],
+        "(спасибо)": ["Пожалуйста :)"],
+
+        // Универсальные ответы
+        "": ["А что вы сами думаете по этому поводу?", "Надо подумать..."]
+    };
+}
+
+Natalia.prototype._match = function (key, question) {
+    var parts = key.match(/\([^\)]+\)/gi) || [];
+    question = question.toLowerCase().split('ё').join('е');
+    var match = true;
+    for (var i = 0; i < parts.length; i++) {
+        var pattern = parts[i];
+        if (!question.match(pattern)) {
+            match = false;
+            break;
+        }
+    }
+    return match;
+}
+
+Natalia.prototype._choose = function (items) {
+    var count = items.length;
+    var index = Math.round(Math.random() * count) % count;
+    return items[index];
+}
+
+Natalia.prototype.ask = function (question) {
+    var reply = "=]";
+    for (var key in this._answers) {
+        if (this._match(key, question)) {
+            reply = this._choose(this._answers[key]);
+            break;
+        }
+    }
+    return reply;
+}
+
+var person = new Natalia();
+
+function createNode(innerText, className) {
+    var node = document.createElement('div');
+    node.innerText = innerText;
+    node.className = className;
+    return node;
+}
+
+function showNode(node) {
+    var parent = document.getElementById('content');
+    parent.insertBefore(node, parent.childNodes[0]);
+}
+
+function showQuestion(text) {
+    var node = createNode(text, 'question');
+    showNode(node);
+}
+
+function showAnswer(text) {
+    var node = createNode(text, 'answer');
+    showNode(node);
+}
+
+function onSubmit() {
+    try {
+        var questionNode = document.getElementById('input-question');
+        var question = questionNode.value;
+        var answer = person.ask(question);
+        showQuestion(question);
+        showAnswer(answer);
+        questionNode.value = '';
+    } catch (e) {
+        console.log(e);
+    }
+    return false;
+}
+
+</script>
+</head>
+
+<body>
+    <div id="header">
+        <div id="avatar"></div>
+        <form id="form" onsubmit="return onSubmit();">
+            <input type="text" id="input-question" placeholder="Введите вопрос..." />
+        </form>
+    </div>
+    <div id="content">
+    </div>
+</body>
+
+</html>
