@@ -52,12 +52,12 @@
 							<td>{{ctrl.Number}}</td>
 							<td>
 								<form ng-submit="ctrl.addStep(ctrl.Number, ctrl.Bulls, ctrl.Cows)">
-									<input type="text" ng-model="ctrl.Bulls" autocomplete="off" style="margin: 0;" />
+									<input type="number" ng-model="ctrl.Bulls" autocomplete="off" style="margin: 0;" />
 								</form>
 							</td>
 							<td>
 								<form ng-submit="ctrl.addStep(ctrl.Number, ctrl.Bulls, ctrl.Cows)">
-									<input type="text" ng-model="ctrl.Cows" autocomplete="off" style="margin: 0;" />
+									<input type="number" ng-model="ctrl.Cows" autocomplete="off" style="margin: 0;" />
 								</form>
 							</td>
 						</tr>
@@ -105,7 +105,7 @@
 							<td></td>
 							<td>
 								<form ng-submit="ctrl.addStep(ctrl.Number)">
-									<input type="text" ng-model="ctrl.Number" autocomplete="off" style="margin: 0;" />
+									<input type="number" ng-model="ctrl.Number" autocomplete="off" style="margin: 0;" />
 								</form>
 							</td>
 							<td colspan="2">
